@@ -1,0 +1,636 @@
+DROP TABLE SITE_USERS     CASCADE CONSTRAINTS ;
+DROP TABLE USER_TYPES     CASCADE CONSTRAINTS ;
+DROP TABLE USER_TYPE      CASCADE CONSTRAINTS ;
+DROP TABLE ITEMS          CASCADE CONSTRAINTS ;
+DROP TABLE CATEGORIES     CASCADE CONSTRAINTS ;
+DROP TABLE ITEM_CATEGORY  CASCADE CONSTRAINTS ;
+DROP TABLE RATINGS        CASCADE CONSTRAINTS ;
+DROP TABLE REVIEWS        CASCADE CONSTRAINTS ;
+DROP TABLE ARCHIVED_ITEMS CASCADE CONSTRAINTS ;
+
+
+/* ----- USERS ----- */
+
+CREATE TABLE SITE_USERS (ID NUMBER ,
+                         NUME VARCHAR2(30) NOT NULL ,
+                         PRENUME VARCHAR2(50)NOT NULL ,
+                         EMAIL VARCHAR2(100) NOT NULL ,
+                         DATA_NASTERE TIMESTAMP(6) NOT NULL ,
+                         USERNAME VARCHAR2(50) UNIQUE NOT NULL ,
+                         PASSWORD VARCHAR2(50) NOT NULL ,
+                         SECURITY_QUESTION VARCHAR2(250) NOT NULL ,
+                         SECURITY_ANSWER VARCHAR2(250) NOT NULL ,
+
+                         CONSTRAINT site_users_pk PRIMARY KEY (ID),
+                         CONSTRAINT valid_email CHECK (EMAIL LIKE '%@%.%'));
+
+
+
+/* ----- USER TYPES ----- */
+
+CREATE TABLE USER_TYPES (ID NUMBER ,
+                         TYPE VARCHAR2(10) NOT NULL ,
+
+                         CONSTRAINT user_types_pk PRIMARY KEY (ID));
+
+INSERT INTO USER_TYPES VALUES (1, 'USER');
+INSERT INTO USER_TYPES VALUES (2, 'ADMIN');
+INSERT INTO USER_TYPES VALUES (3, 'GUEST');
+
+
+
+/* ----- USERS <-> USER TYPES TRIVIAL TABLE ----- */
+
+CREATE TABLE USER_TYPE (ID NUMBER ,
+                        USER_ID NUMBER NOT NULL ,
+                        TYPE_ID NUMBER NOT NULL ,
+
+                        CONSTRAINT user_type_pk PRIMARY KEY (ID),
+                        CONSTRAINT trivial1_to_users_fk FOREIGN KEY (USER_ID) REFERENCES SITE_USERS(ID),
+                        CONSTRAINT trivial1_to_type_fk  FOREIGN KEY (TYPE_ID) REFERENCES USER_TYPES(ID));
+
+
+
+/* ----- ITEMS ----- */
+
+CREATE TABLE ITEMS (ID NUMBER ,
+                    USER_ID NUMBER ,
+                    TITLE VARCHAR2(100) NOT NULL ,
+                    DESCRIPTION VARCHAR2(3000) NOT NULL ,
+                    START_DATE TIMESTAMP(6) NOT NULL ,
+                    VIEWS NUMBER NOT NULL ,
+
+                    CONSTRAINT items_pk PRIMARY KEY (ID),
+                    CONSTRAINT items_users_fk FOREIGN KEY (USER_ID) REFERENCES SITE_USERS(ID));
+
+
+
+/* ----- CATEGORIES ----- */
+
+CREATE TABLE CATEGORIES (ID NUMBER ,
+                         CATEGORY_NAME VARCHAR2(50) NOT NULL ,
+
+                         CONSTRAINT categories_pk PRIMARY KEY (ID));
+
+INSERT INTO CATEGORIES VALUES (1 , 'EVENT');
+INSERT INTO CATEGORIES VALUES (2 , 'PRODUCT');
+INSERT INTO CATEGORIES VALUES (3 , 'LOCATION');
+INSERT INTO CATEGORIES VALUES (4 , 'PARTY');
+INSERT INTO CATEGORIES VALUES (5 , 'CONCERT');
+INSERT INTO CATEGORIES VALUES (6 , 'CONVENTION');
+INSERT INTO CATEGORIES VALUES (7 , 'ANIMALS');
+INSERT INTO CATEGORIES VALUES (8 , 'CULTURAL');
+INSERT INTO CATEGORIES VALUES (9 , 'FOOD');
+INSERT INTO CATEGORIES VALUES (10, 'SPORTS');
+INSERT INTO CATEGORIES VALUES (11, 'TALENT');
+INSERT INTO CATEGORIES VALUES (12, 'DANCING');
+INSERT INTO CATEGORIES VALUES (13, 'TECH');
+INSERT INTO CATEGORIES VALUES (14, 'CARS');
+INSERT INTO CATEGORIES VALUES (15, 'OTHER');
+
+
+
+/* ----- ITEMS <-> CATEGORIES TRIVIAL TABLE ----- */
+
+CREATE TABLE ITEM_CATEGORY (ID NUMBER ,
+                            ITEM_ID NUMBER NOT NULL ,
+                            CATEGORY_ID NUMBER NOT NULL ,
+
+                            CONSTRAINT item_category_pk       PRIMARY KEY (ID),
+                            CONSTRAINT trivial2_to_items      FOREIGN KEY (ITEM_ID)     REFERENCES ITEMS(ID),
+                            CONSTRAINT trivial2_to_categories FOREIGN KEY (CATEGORY_ID) REFERENCES CATEGORIES(ID));
+
+
+
+/* ----- RATINGS ----- */
+
+CREATE TABLE RATINGS (ID NUMBER ,
+                      USER_ID NUMBER NOT NULL ,
+                      ITEM_ID NUMBER NOT NULL ,
+                      SCORE NUMBER NOT NULL ,
+                      DATE_LEFT TIMESTAMP NOT NULL ,
+
+                      CONSTRAINT ratings_pk        PRIMARY KEY (ID),
+                      CONSTRAINT ratings_users_fk  FOREIGN KEY (USER_ID) REFERENCES SITE_USERS(ID),
+                      CONSTRAINT ratings_items_fk  FOREIGN KEY (ITEM_ID) REFERENCES ITEMS(ID),
+                      CONSTRAINT one_review_per_user UNIQUE (USER_ID,ITEM_ID));
+
+
+
+/* ----- REVIEWS ----- */
+
+CREATE TABLE REVIEWS (ID NUMBER ,
+                      USER_ID NUMBER NOT NULL ,
+                      ITEM_ID NUMBER NOT NULL ,
+                      CONTENT VARCHAR2(3000) NOT NULL ,
+                      DATE_LEFT TIMESTAMP NOT NULL ,
+
+                      CONSTRAINT reviews_pk        PRIMARY KEY (ID),
+                      CONSTRAINT reviews_users_fk  FOREIGN KEY (USER_ID) REFERENCES SITE_USERS(ID),
+                      CONSTRAINT reviews_items_fk  FOREIGN KEY (ITEM_ID) REFERENCES ITEMS(ID),
+                      CONSTRAINT one_rate_per_user UNIQUE (USER_ID,ITEM_ID));
+
+
+
+/* ----- ARCHIVED ITEMS ----- */
+
+CREATE TABLE ARCHIVED_ITEMS (ID NUMBER ,
+                             ITEM_ID NUMBER NOT NULL ,
+                             USER_ID NUMBER NOT NULL ,
+                             TITLE VARCHAR2(100) NOT NULL ,
+                             DESCRIPTION VARCHAR2(3000) NOT NULL ,
+                             START_DATE TIMESTAMP(6) NOT NULL ,
+                             END_DATE TIMESTAMP(6) NOT NULL ,
+                             AVERAGE_RATING NUMBER ,
+
+                             CONSTRAINT archived_items_pk       PRIMARY KEY (ID),
+                             CONSTRAINT archived_items_items_fk FOREIGN KEY (ITEM_ID) REFERENCES ITEMS(ID),
+                             CONSTRAINT archived_items_users_fk FOREIGN KEY (USER_ID) REFERENCES SITE_USERS(ID));
+							 
+COMMIT;
+
+CREATE TABLE USER_SOURCE AS (SELECT * FROM STUDENT.USERS);
+
+
+DECLARE
+  ID_GENERATOR     SITE_USERS.ID%TYPE := 0;
+  NEW_NUME         SITE_USERS.NUME%TYPE;
+  NEW_PRENUME      SITE_USERS.PRENUME%TYPE;
+  NEW_DATA_NASTERE SITE_USERS.DATA_NASTERE%TYPE;
+  NEW_EMAIL        SITE_USERS.EMAIL%TYPE;
+  NEW_USERNAME     SITE_USERS.USERNAME%TYPE;
+  NEW_PASSWORD     SITE_USERS.PASSWORD%TYPE;
+  NEW_QUESTION     SITE_USERS.SECURITY_QUESTION%TYPE;
+  NEW_ANSWER       SITE_USERS.SECURITY_ANSWER%TYPE;
+
+  FOR_INDEX INTEGER;
+  AUX_NUM   NUMBER;
+
+  NEW_PRENUME_2 SITE_USERS.PRENUME%TYPE;
+
+
+  SELECTED_ENTRY    INTEGER;
+  SELECTED_ENTRY_ID SITE_USERS.ID%TYPE;
+  SOURCE_ENTRIES    INTEGER;
+BEGIN
+
+  SELECT COUNT(*) INTO SOURCE_ENTRIES FROM USER_SOURCE;
+
+  FOR FOR_INDEX IN 1..15000 LOOP
+
+    /* GENERAM ID PENTRU NOUL USER */
+    ID_GENERATOR := ID_GENERATOR + 1;
+
+    /* UN NUME DE FAMILIE RANDOM DIN USERS */
+    SELECTED_ENTRY := DBMS_RANDOM.VALUE(1, SOURCE_ENTRIES); -- DE LA CE STUDENT LUAM NUMELE(AL CATELEA)
+
+    SELECT MAX(ID)            -- ID-UL SAU
+      INTO SELECTED_ENTRY_ID
+      FROM (SELECT ID
+              FROM USER_SOURCE
+              ORDER BY ID ASC)
+      WHERE ROWNUM < (SELECTED_ENTRY + 1);
+
+    SELECT SUBSTR(NAME,INSTR(NAME,' ') + 1) -- NUMELE STUDENTULUI SELECTAT
+      INTO NEW_NUME
+      FROM USER_SOURCE
+      WHERE ID = SELECTED_ENTRY_ID;
+
+    /* SEXUL(M/F) SI UN PRENUME */
+    IF DBMS_RANDOM.VALUE(0, 100) < 50 -- NOUL USER E FATA SAU BAIAT?(PENTRU PRENUME)
+      THEN -- BAIAT
+
+        SELECT COUNT(*) -- CATE PRENUME DE BAIETI AVEM
+          INTO SOURCE_ENTRIES
+          FROM USER_SOURCE
+          WHERE SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) NOT LIKE '%a';
+
+        SELECTED_ENTRY := DBMS_RANDOM.VALUE(1, SOURCE_ENTRIES); -- DE LA CE BAIAT LUAM PRENUMELE
+
+        SELECT MAX(ID)           -- ID-UL SAU
+          INTO SELECTED_ENTRY_ID
+          FROM (SELECT ID
+                  FROM USER_SOURCE
+                  WHERE SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) NOT LIKE '%a'
+                  ORDER BY ID ASC)
+          WHERE ROWNUM < (SELECTED_ENTRY + 1);
+
+        SELECT SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) -- PRENUMELE BAIATULUI SELECTAT
+          INTO NEW_PRENUME
+          FROM USER_SOURCE
+          WHERE ID = SELECTED_ENTRY_ID;
+
+      ELSE -- FATA
+
+        SELECT COUNT(*) -- CATE PRENUME DE FETE AVEM
+          INTO SOURCE_ENTRIES
+          FROM USER_SOURCE
+          WHERE SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) LIKE '%a';
+
+        SELECTED_ENTRY := DBMS_RANDOM.VALUE(1, SOURCE_ENTRIES); -- DE LA CE FATA LUAM PRENUMELE
+
+        SELECT MAX(ID)           -- ID-UL SAU
+          INTO SELECTED_ENTRY_ID
+          FROM (SELECT ID
+                  FROM USER_SOURCE
+                  WHERE SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) LIKE '%a'
+                  ORDER BY ID ASC)
+          WHERE ROWNUM < (SELECTED_ENTRY + 1);
+
+        SELECT SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) -- PRENUMELE FETEI SELECTATE
+          INTO NEW_PRENUME
+          FROM USER_SOURCE
+          WHERE ID = SELECTED_ENTRY_ID;
+
+    END IF;
+
+    /* EMAIL DE TIP NUME.PRENUME */
+    NEW_EMAIL := LOWER(NEW_NUME) || '.' || LOWER(NEW_PRENUME) || ID_GENERATOR || '@info.uaic.ro';
+
+
+    /* SANSA DE 25% CA STUDENTUL SA AIBA UN AL DOILEA PRENUME */
+    IF DBMS_RANDOM.VALUE(0,100) < 25
+      THEN
+        IF NEW_PRENUME NOT LIKE '%a'
+          THEN -- BAIAT
+            SELECT COUNT(*) -- CATE PRENUME DE BAIETI AVEM
+              INTO SOURCE_ENTRIES
+              FROM USER_SOURCE
+              WHERE SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) NOT LIKE '%a';
+
+            SELECTED_ENTRY := DBMS_RANDOM.VALUE(1, SOURCE_ENTRIES); -- DE LA CE BAIAT LUAM PRENUMELE
+
+            SELECT MAX(ID)           -- ID-UL SAU
+              INTO SELECTED_ENTRY_ID
+              FROM (SELECT ID
+                      FROM USER_SOURCE
+                      WHERE SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) NOT LIKE '%a'
+                      ORDER BY ID ASC)
+              WHERE ROWNUM < (SELECTED_ENTRY + 1);
+
+            SELECT SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) -- PRENUMELE BAIATULUI SELECTAT
+              INTO NEW_PRENUME_2
+              FROM USER_SOURCE
+              WHERE ID = SELECTED_ENTRY_ID;
+
+          ELSE -- FATA
+            SELECT COUNT(*) -- CATE PRENUME DE FETE AVEM
+              INTO SOURCE_ENTRIES
+              FROM USER_SOURCE
+              WHERE SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) LIKE '%a';
+
+            SELECTED_ENTRY := DBMS_RANDOM.VALUE(1, SOURCE_ENTRIES); -- DE LA CE FATA LUAM PRENUMELE
+
+            SELECT MAX(ID)           -- ID-UL SAU
+              INTO SELECTED_ENTRY_ID
+              FROM (SELECT ID
+                      FROM USER_SOURCE
+                      WHERE SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) LIKE '%a'
+                      ORDER BY ID ASC)
+              WHERE ROWNUM < (SELECTED_ENTRY + 1);
+
+            SELECT SUBSTR(NAME, 1, INSTR(NAME,' ') - 1) -- PRENUMELE FETEI SELECTATE
+              INTO NEW_PRENUME_2
+              FROM USER_SOURCE
+              WHERE ID = SELECTED_ENTRY_ID;
+        END IF;
+        NEW_PRENUME := NEW_PRENUME || ' ' || NEW_PRENUME_2; -- CONCATENAM PRENUMELE
+    END IF;
+
+    /* DATA NASTERE RANDOM DIN ANUL 1997 */
+    NEW_DATA_NASTERE := '01/IANUARIE/1960';
+    NEW_DATA_NASTERE := NEW_DATA_NASTERE + round(DBMS_RANDOM.VALUE(0, 40 * 365));
+
+    /* USERNAME */
+    IF instr(NEW_PRENUME,' ') <> 0 THEN
+      NEW_USERNAME := lower(substr(NEW_PRENUME, 1, instr(NEW_PRENUME, ' ') - 1)) || substr(NEW_NUME,1,1) || ID_GENERATOR;
+      ELSE
+      NEW_USERNAME := lower(NEW_PRENUME) || substr(NEW_NUME,1,1) || ID_GENERATOR;
+    END IF;
+
+    SELECT count(*) INTO AUX_NUM FROM SITE_USERS WHERE USERNAME = NEW_USERNAME;
+    WHILE (AUX_NUM <> 0) LOOP
+      NEW_USERNAME := NEW_USERNAME || TO_CHAR(ROUND(DBMS_RANDOM.VALUE(0,9)));
+      SELECT count(*) INTO AUX_NUM FROM SITE_USERS WHERE USERNAME = NEW_USERNAME;
+    END LOOP;
+
+    /* PASSWORD */
+    NEW_PASSWORD := DBMS_RANDOM.STRING('X', DBMS_RANDOM.VALUE(8, 30));
+
+    /* SECURITY QUESTION AND ANSWER */
+    NEW_QUESTION := 'Do you have more than one first name?';
+    IF instr(NEW_PRENUME,' ') <> 0 THEN
+      NEW_ANSWER := 'Yes';
+      ELSE
+      NEW_ANSWER := 'No';
+    END IF;
+
+    /* INSERAM NOILE INFORMATII IN TABELA */
+    INSERT INTO SITE_USERS VALUES (FOR_INDEX, NEW_NUME, NEW_PRENUME, NEW_EMAIL, NEW_DATA_NASTERE, NEW_USERNAME, NEW_PASSWORD, NEW_QUESTION, NEW_ANSWER);
+
+  END LOOP;
+END;
+
+DROP TABLE USER_SOURCE;
+
+COMMIT;
+
+CREATE TABLE ipre (
+  ID    NUMBER PRIMARY KEY,
+  pnume VARCHAR2(40) NOT NULL
+);
+CREATE TABLE ilast (
+  ID    NUMBER PRIMARY KEY,
+  lnume VARCHAR(40) NOT NULL
+);
+CREATE TABLE categories1 (
+  ID    NUMBER PRIMARY KEY,
+  cnume VARCHAR2(40) NOT NULL
+);
+
+INSERT INTO ipre (id, pnume) VALUES (1, 'Vase');
+INSERT INTO ipre (id, pnume) VALUES (2, 'Pot');
+INSERT INTO ipre (id, pnume) VALUES (3, 'Statue');
+INSERT INTO ipre (id, pnume) VALUES (4, 'Sword');
+INSERT INTO ipre (id, pnume) VALUES (5, 'Armor');
+INSERT INTO ipre (id, pnume) VALUES (6, 'Basket');
+INSERT INTO ipre (id, pnume) VALUES (7, 'Fruit');
+INSERT INTO ipre (id, pnume) VALUES (8, 'Carving');
+INSERT INTO ipre (id, pnume) VALUES (9, 'Painting');
+INSERT INTO ipre (id, pnume) VALUES (10, 'Tea Coup');
+INSERT INTO ipre (id, pnume) VALUES (11, 'Flag');
+INSERT INTO ipre (id, pnume) VALUES (12, 'Coin');
+INSERT INTO ipre (id, pnume) VALUES (13, 'Book');
+INSERT INTO ipre (id, pnume) VALUES (14, 'Essence');
+INSERT INTO ipre (id, pnume) VALUES (15, 'Game');
+INSERT INTO ipre (id, pnume) VALUES (16, 'Car');
+INSERT INTO ipre (id, pnume) VALUES (17, 'Depiction');
+INSERT INTO ipre (id, pnume) VALUES (18, 'Straw Hat');
+INSERT INTO ipre (id, pnume) VALUES (19, 'Bottle');
+INSERT INTO ipre (id, pnume) VALUES (20, 'Chain');
+INSERT INTO ipre (id, pnume) VALUES (21, 'Uniform');
+INSERT INTO ipre (id, pnume) VALUES (22, 'Plant');
+INSERT INTO ipre (id, pnume) VALUES (23, 'Tree');
+INSERT INTO ipre (id, pnume) VALUES (24, 'Chair');
+INSERT INTO ipre (id, pnume) VALUES (25, 'Tea-set');
+INSERT INTO ipre (id, pnume) VALUES (26, 'Candle');
+INSERT INTO ipre (id, pnume) VALUES (27, 'Bowl');
+INSERT INTO ipre (id, pnume) VALUES (28, 'Bostan');
+INSERT INTO ipre (id, pnume) VALUES (29, 'Disc');
+INSERT INTO ipre (id, pnume) VALUES (30, 'Collection');
+INSERT INTO ipre (id, pnume) VALUES (31, 'Guitar');
+INSERT INTO ipre (id, pnume) VALUES (32, 'Song');
+INSERT INTO ipre (id, pnume) VALUES (33, 'Secret');
+INSERT INTO ipre (id, pnume) VALUES (34, 'Acorn');
+INSERT INTO ipre (id, pnume) VALUES (35, 'T-shirt');
+INSERT INTO ipre (id, pnume) VALUES (36, 'Pants');
+INSERT INTO ipre (id, pnume) VALUES (37, 'Horn');
+INSERT INTO ipre (id, pnume) VALUES (38, 'Plate');
+INSERT INTO ipre (id, pnume) VALUES (39, 'Nekless');
+INSERT INTO ipre (id, pnume) VALUES (40, 'Ring');
+
+
+/* ilast */
+
+INSERT INTO ilast (id, lnume) VALUES (1, 'Sunny');
+INSERT INTO ilast (id, lnume) VALUES (2, 'Blue');
+INSERT INTO ilast (id, lnume) VALUES (3, 'Green');
+INSERT INTO ilast (id, lnume) VALUES (4, 'Red');
+INSERT INTO ilast (id, lnume) VALUES (5, 'Orange');
+INSERT INTO ilast (id, lnume) VALUES (6, 'Onyx');
+INSERT INTO ilast (id, lnume) VALUES (7, 'Charred');
+INSERT INTO ilast (id, lnume) VALUES (8, 'Antique');
+INSERT INTO ilast (id, lnume) VALUES (9, 'Crystal');
+INSERT INTO ilast (id, lnume) VALUES (10, 'Hot');
+INSERT INTO ilast (id, lnume) VALUES (11, 'Cool');
+INSERT INTO ilast (id, lnume) VALUES (12, 'Silvery');
+INSERT INTO ilast (id, lnume) VALUES (13, 'Golden');
+INSERT INTO ilast (id, lnume) VALUES (14, 'Rose');
+INSERT INTO ilast (id, lnume) VALUES (15, 'Metal');
+INSERT INTO ilast (id, lnume) VALUES (16, 'Beautifull');
+INSERT INTO ilast (id, lnume) VALUES (17, 'Ornate');
+INSERT INTO ilast (id, lnume) VALUES (18, 'Mysterious');
+INSERT INTO ilast (id, lnume) VALUES (19, 'Dusty');
+INSERT INTO ilast (id, lnume) VALUES (20, 'Delicate');
+INSERT INTO ilast (id, lnume) VALUES (21, 'Colorfull');
+INSERT INTO ilast (id, lnume) VALUES (22, 'Legendary');
+INSERT INTO ilast (id, lnume) VALUES (23, 'Odd');
+INSERT INTO ilast (id, lnume) VALUES (24, 'Strange');
+INSERT INTO ilast (id, lnume) VALUES (25, 'Old');
+INSERT INTO ilast (id, lnume) VALUES (26, 'Grim');
+INSERT INTO ilast (id, lnume) VALUES (27, 'Lovely');
+INSERT INTO ilast (id, lnume) VALUES (28, 'Mistical');
+INSERT INTO ilast (id, lnume) VALUES (29, 'Arhaic');
+INSERT INTO ilast (id, lnume) VALUES (30, 'Rustic');
+
+/*categories*/
+
+INSERT INTO categories1 (id, cnume) VALUES (1, 'Item');
+INSERT INTO categories1 (id, cnume) VALUES (2, 'Festival');
+INSERT INTO categories1 (id, cnume) VALUES (3, 'Party');
+INSERT INTO categories1 (id, cnume) VALUES (4, 'Cafe');
+INSERT INTO categories1 (id, cnume) VALUES (5, 'Restaurant');
+INSERT INTO categories1 (id, cnume) VALUES (6, 'Concert');
+INSERT INTO categories1 (id, cnume) VALUES (7, 'Gathering');
+INSERT INTO categories1 (id, cnume) VALUES (8, 'Contest');
+INSERT INTO categories1 (id, cnume) VALUES (9, 'Ceremony');
+INSERT INTO categories1 (id, cnume) VALUES (10, 'Pub');
+INSERT INTO categories1 (id, cnume) VALUES (11, 'Hotel');
+INSERT INTO categories1 (id, cnume) VALUES (12, 'Title');
+
+
+DECLARE
+  ID_GENERATOR    ITEMS.ID%TYPE;
+  NEW_USER_ID     ITEMS.USER_ID%TYPE;
+  NEW_TITLE       ITEMS.TITLE%TYPE;
+  NEW_DESCRIPTION ITEMS.DESCRIPTION%TYPE;
+  NEW_START_DATE  ITEMS.START_DATE%TYPE;
+  NEW_VIEWS       ITEMS."VIEWS"%TYPE;
+
+  AUX_NUM    NUMBER;
+  AUX_STRING VARCHAR2(40);
+BEGIN
+  FOR ID_GENERATOR IN 1..1500 LOOP
+    /* ID ALREADY HAS A VALID VALUE */
+
+    /* USER ID */
+    AUX_NUM := ROUND(DBMS_RANDOM.VALUE(1,15000));
+    SELECT ID INTO NEW_USER_ID FROM SITE_USERS WHERE ID = AUX_NUM;
+
+    /* TITLE */
+    NEW_TITLE := '';
+    AUX_NUM := ROUND(DBMS_RANDOM.VALUE(1,30));
+    SELECT LNUME INTO AUX_STRING FROM ILAST WHERE ID = AUX_NUM;
+    NEW_TITLE := NEW_TITLE || AUX_STRING;
+    AUX_NUM := ROUND(DBMS_RANDOM.VALUE(1,40));
+    SELECT PNUME INTO AUX_STRING FROM IPRE WHERE ID = AUX_NUM;
+    NEW_TITLE := NEW_TITLE || ' ' || AUX_STRING;
+    AUX_NUM := ROUND(DBMS_RANDOM.VALUE(1,12));
+    SELECT CNUME INTO AUX_STRING FROM CATEGORIES1 WHERE ID = AUX_NUM;
+    NEW_TITLE := NEW_TITLE || ' ' || AUX_STRING;
+
+    /* DESCRIPTION */
+    NEW_DESCRIPTION := '';
+    FOR AUX_NUM IN 1..25 LOOP
+      NEW_DESCRIPTION := NEW_DESCRIPTION || DBMS_RANDOM.STRING('L', DBMS_RANDOM.VALUE(5,15)) || ' ';
+    END LOOP;
+
+    /* START DATE */
+    NEW_START_DATE := TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2000-01-01','J'),TO_CHAR(DATE '2017-12-31','J'))),'J');
+
+    /* VIEWS */
+    NEW_VIEWS := ROUND(DBMS_RANDOM.VALUE(1,10000));
+
+    /* INSERT THE NEW DATA */
+    INSERT INTO ITEMS VALUES (ID_GENERATOR,
+                              NEW_USER_ID,
+                              NEW_TITLE,
+                              NEW_DESCRIPTION,
+                              NEW_START_DATE,
+                              NEW_VIEWS);
+  END LOOP;
+END;
+
+DROP TABLE ipre;
+DROP TABLE ilast;
+DROP TABLE categories1;
+
+COMMIT;
+
+DECLARE
+  ID_GENERATOR  RATINGS.ID%TYPE;
+  NEW_USER_ID   RATINGS.USER_ID%TYPE;
+  NEW_ITEM_ID   RATINGS.ITEM_ID%TYPE;
+  NEW_SCORE     RATINGS.SCORE%TYPE;
+  NEW_DATE_LEFT RATINGS.DATE_LEFT%TYPE;
+
+  AUX_NUM NUMBER;
+BEGIN
+  FOR ID_GENERATOR IN 1..35000 LOOP
+    /* ID GENERATOR ARE DEJA O VALOARE VALIDA */
+
+    /* USER AND ITEM ID */
+    NEW_USER_ID := ROUND(DBMS_RANDOM.VALUE(1,15000));
+    NEW_ITEM_ID := ROUND(DBMS_RANDOM.VALUE(1,1500));
+    SELECT COUNT(*) INTO AUX_NUM FROM RATINGS WHERE USER_ID = NEW_USER_ID AND ITEM_ID = NEW_ITEM_ID;
+    WHILE (AUX_NUM <> 0) LOOP
+      NEW_USER_ID := ROUND(DBMS_RANDOM.VALUE(1,15000));
+      NEW_ITEM_ID := ROUND(DBMS_RANDOM.VALUE(1,1500));
+      SELECT COUNT(*) INTO AUX_NUM FROM RATINGS WHERE USER_ID = NEW_USER_ID AND ITEM_ID = NEW_ITEM_ID;
+    END LOOP;
+
+    /* SCORE */
+    NEW_SCORE   := ROUND(DBMS_RANDOM.VALUE(0,5));
+
+    /* DATE LEFT */
+    NEW_DATE_LEFT := TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2000-01-01','J'),TO_CHAR(CURRENT_DATE, 'J'))),'J');
+
+    /* INSERT THE NEW DATA */
+    INSERT INTO RATINGS VALUES (ID_GENERATOR,
+                                NEW_USER_ID,
+                                NEW_ITEM_ID,
+                                NEW_SCORE,
+                                NEW_DATE_LEFT);
+  END LOOP;
+END;
+
+COMMIT;
+
+DECLARE
+  ID_GENERATOR  REVIEWS.ID%TYPE;
+  NEW_USER_ID   REVIEWS.USER_ID%TYPE;
+  NEW_ITEM_ID   REVIEWS.ITEM_ID%TYPE;
+  NEW_CONTENT   REVIEWS.CONTENT%TYPE;
+  NEW_DATE_LEFT REVIEWS.DATE_LEFT%TYPE;
+
+  AUX_NUM  NUMBER;
+  AUX_NUM2 NUMBER;
+BEGIN
+  FOR ID_GENERATOR IN 1..7500 LOOP
+    /* ID GENERATOR ARE DEJA O VALOARE VALIDA */
+
+    /* USER AND ITEM ID */
+    NEW_USER_ID := ROUND(DBMS_RANDOM.VALUE(1,15000));
+    NEW_ITEM_ID := ROUND(DBMS_RANDOM.VALUE(1,1500));
+    SELECT COUNT(*) INTO AUX_NUM FROM REVIEWS WHERE USER_ID = NEW_USER_ID AND ITEM_ID = NEW_ITEM_ID;
+    WHILE (AUX_NUM <> 0) LOOP
+      NEW_USER_ID := ROUND(DBMS_RANDOM.VALUE(1,15000));
+      NEW_ITEM_ID := ROUND(DBMS_RANDOM.VALUE(1,1500));
+      SELECT COUNT(*) INTO AUX_NUM FROM REVIEWS WHERE USER_ID = NEW_USER_ID AND ITEM_ID = NEW_ITEM_ID;
+    END LOOP;
+
+    /* CONTENT */
+    NEW_CONTENT := '';
+    AUX_NUM2 := ROUND(DBMS_RANDOM.VALUE(5, 200));
+    FOR AUX_NUM IN 1..AUX_NUM2 LOOP
+      NEW_CONTENT := NEW_CONTENT || ' ' || TO_CHAR(DBMS_RANDOM.STRING('L', ROUND(DBMS_RANDOM.VALUE(1,14))));
+    END LOOP;
+    NEW_CONTENT := INITCAP(NEW_CONTENT);
+
+    /* DATE LEFT */
+    NEW_DATE_LEFT := TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2000-01-01','J'),TO_CHAR(CURRENT_DATE, 'J'))),'J');
+
+    /* INSERT THE NEW DATA */
+    INSERT INTO REVIEWS VALUES (ID_GENERATOR,
+                                NEW_USER_ID,
+                                NEW_ITEM_ID,
+                                NEW_CONTENT,
+                                NEW_DATE_LEFT);
+  END LOOP;
+END;
+
+COMMIT;
+
+DECLARE
+  ID_GENERATOR       ARCHIVED_ITEMS.ID%TYPE;
+  NEW_ITEM_ID        ARCHIVED_ITEMS.ITEM_ID%TYPE;
+  NEW_USER_ID        ARCHIVED_ITEMS.USER_ID%TYPE;
+  NEW_TITLE          ARCHIVED_ITEMS.TITLE%TYPE;
+  NEW_DESCRIPTION    ARCHIVED_ITEMS.DESCRIPTION%TYPE;
+  NEW_START_DATE     ARCHIVED_ITEMS.START_DATE%TYPE ;
+  NEW_END_DATE       ARCHIVED_ITEMS.END_DATE%TYPE;
+  NEW_AVERAGE_RATING ARCHIVED_ITEMS.AVERAGE_RATING%TYPE;
+
+  AUX_NUM  NUMBER;
+  AUX_NUM2 NUMBER;
+BEGIN
+  FOR ID_GENERATOR IN 1..275 LOOP
+    /* ID GENERATOR ARE DEJA O VALOARE VALIDA */
+
+    /* ITEM ID */
+    NEW_ITEM_ID := ROUND(DBMS_RANDOM.VALUE(1,1500));
+    SELECT COUNT(*) INTO AUX_NUM FROM ARCHIVED_ITEMS WHERE ITEM_ID = NEW_ITEM_ID;
+    WHILE (AUX_NUM <> 0) LOOP
+      NEW_ITEM_ID := ROUND(DBMS_RANDOM.VALUE(1,1500));
+      SELECT COUNT(*) INTO AUX_NUM FROM ARCHIVED_ITEMS WHERE ITEM_ID = NEW_ITEM_ID;
+    END LOOP;
+
+    /* USER ID */
+    SELECT USER_ID INTO NEW_USER_ID FROM ITEMS WHERE ID = NEW_ITEM_ID;
+
+    /* TITLE */
+    SELECT TITLE INTO NEW_TITLE FROM ITEMS WHERE ID = NEW_ITEM_ID AND USER_ID = NEW_USER_ID;
+
+    /* DESCRIPTION */
+    SELECT DESCRIPTION INTO NEW_DESCRIPTION FROM ITEMS WHERE ID = NEW_ITEM_ID AND USER_ID = NEW_USER_ID;
+
+    /* START AND END DATE */
+    SELECT START_DATE INTO NEW_START_DATE FROM ITEMS WHERE ID = NEW_ITEM_ID AND USER_ID = NEW_USER_ID;
+    NEW_END_DATE := TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(NEW_START_DATE,'J'),TO_CHAR(CURRENT_DATE, 'J'))),'J');
+
+    /* AVERAGE RATING */
+    SELECT AVG(SCORE) INTO NEW_AVERAGE_RATING FROM RATINGS WHERE ITEM_ID = NEW_ITEM_ID;
+
+    /* INSERT THE NEW DATA */
+    INSERT INTO ARCHIVED_ITEMS VALUES (ID_GENERATOR,
+                                       NEW_ITEM_ID,
+                                       NEW_USER_ID,
+                                       NEW_TITLE,
+                                       NEW_DESCRIPTION,
+                                       NEW_START_DATE,
+                                       NEW_END_DATE,
+                                       NEW_AVERAGE_RATING);
+  END LOOP;
+END;
+
+COMMIT;
