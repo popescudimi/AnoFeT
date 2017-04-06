@@ -1,2 +1,0 @@
-# AnoFeT
-Proiect TW
