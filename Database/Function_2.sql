@@ -1,0 +1,1 @@
+The functions were a bit modified (exceptions and if clause)
