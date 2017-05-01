@@ -8,7 +8,7 @@ body {
 	background-color: #000000; 
 	background-image: url('../images/background.jpg');
 	background-repeat: repeat-x;
-	background-position: 0px 0px;
+	background-position: 0 0;
 
 }
 
@@ -55,7 +55,7 @@ code {
 
 #wrapp {
 	width: 970px;
-	margin: 0px auto;
+	margin: 0 auto;
 	background-image: url('../images/header_bg.jpg');
 	background-repeat: no-repeat;
 	background-position: right top;
@@ -83,7 +83,7 @@ code {
 	font-variant: normal;
 	width: 400px;
 	padding-top: 125px;
-	padding-left: 0px;
+	padding-left: 0;
 }
 #HederTitle h1 a:link,
 #HederTitle h1 a:visited {
@@ -103,7 +103,7 @@ code {
 	display: block;
 	width: 450px;
 	font-size: 1.1em;
-	padding-left: 0px;
+	padding-left: 0;
 }
 
 
@@ -116,7 +116,7 @@ code {
 	margin-top: 100px;
 	margin-right: auto;
 	margin-bottom: 5px;
-	margin-left: 0px;
+	margin-left: 0;
 	height: 200px;
 	overflow:auto;
 	
@@ -129,9 +129,9 @@ code {
 }
 #BottomHeaderWrapp img,
 #BottomHeaderWrapp a img {
-	padding-top:0px;
+	padding-top:0;
 	padding-bottom:5px;
-	padding-left:0px;
+	padding-left:0;
 	padding-right:9px;
 
 
@@ -162,8 +162,8 @@ code {
 #wrappinner {
 	width: 740px;
 	float: left;
-	margin: 0px;
-	padding: 0px;
+	margin: 0;
+	padding: 0;
 }
 
 #main {
@@ -210,7 +210,7 @@ code {
 	margin-bottom: 15px;
 	background-image: url('../images/entry_bg_top_alt.jpg');
 	background-repeat: no-repeat;
-	background-position: -1px 0px;
+	background-position: -1px 0;
 }
 #main .entryBox .title h2 {
 	font-weight: normal;
@@ -242,9 +242,9 @@ code {
 #main .entryBox .entry {
 	width: 510px;
 	overflow: auto;
-	margin-top: 0px;
+	margin-top: 0;
 	margin-right: auto;
-	margin-bottom: 0px;
+	margin-bottom: 0;
 	margin-left: auto;
         color: #4D5359;
 }
@@ -288,7 +288,7 @@ code {
 	margin-top: 10px;
 	margin-right: 5px;
 	margin-bottom: 10px;
-	margin-left: 0px;
+	margin-left: 0;
 	background-color: #DEDBD0;
 	padding: 3px;
 	font-size: 1em;
@@ -298,9 +298,9 @@ code {
 	font-size: 0.9em;
 	padding-left: 10px;
 	line-height: 1.5em;
-	border-top-width: 0px;
-	border-right-width: 0px;
-	border-bottom-width: 0px;
+	border-top-width: 0;
+	border-right-width: 0;
+	border-bottom-width: 0;
 	border-left-width: 3px;
 	border-top-style: none;
 	border-right-style: none;
@@ -317,11 +317,11 @@ code {
 	width: 500px;
 }
 #main .entryBox .entryBottom {
-	height:35px; 
+	height: 35px;
 	background-image: url('../images/entry_bg_bottom_alt.jpg');
 	background-repeat: no-repeat;
 	background-position: -1px 1px;
-	height: 40px;
+	/*height: 40px;*/
 }
 #main .entryBox .entryBottom span {
 	font-size: 0.8em; 
@@ -353,14 +353,14 @@ code {
 #main .entryBoxAlt .entryDescription {
 	width: 510px;
 	overflow: auto;
-	margin-top: 0px;
+	margin-top: 0;
 	margin-right: auto;
-	margin-bottom: 0px;
+	margin-bottom: 0;
 	margin-left: auto;
 }
 #main .entryBox .entryDescription p,
 #main .entryBoxAlt .entryDescription p {
-	padding: 15px 8px 0px;
+	padding: 15px 8px 0;
 	line-height: 1.5em;
 }
 #main .entryBox .entryDescription p a:link,
@@ -421,7 +421,7 @@ code {
 	margin-bottom: 35px;
 	background-image: url('../images/entry_bg_top_alt.jpg');
 	background-repeat: no-repeat;
-	background-position: -1px 0px;
+	background-position: -1px 0;
 }
 #main .entryBoxAlt .entryBottom {
 	background-image: url('../images/entry_bg_bottom_alt.jpg');
@@ -454,10 +454,10 @@ code {
 
 }
 #main #commentForm input#submit {
-	border-top-width: 0px;
-	border-right-width: 0px;
-	border-bottom-width: 0px;
-	border-left-width: 0px;
+	border-top-width: 0;
+	border-right-width: 0;
+	border-bottom-width: 0;
+	border-left-width: 0;
 	border-top-style: none;
 	border-right-style: none;
 	border-bottom-style: none;
@@ -536,7 +536,7 @@ code {
 #sidebar form input#s {
 	font-family: "Trebuchet MS", "Lucida Sans Std", "Lucida Sans Unicode", sans-serif;
 	padding: 8px 5px;
-	margin:0px 0px 5px;
+	margin:0 0 5px;
 	font-size: 1.3em;
 	font-weight: normal;
 	background-color: #fafafa;
@@ -603,7 +603,7 @@ code {
 #sidebar2 form input#s {
 	font-family: "Trebuchet MS", "Lucida Sans Std", "Lucida Sans Unicode", sans-serif;
 	padding: 8px 5px;
-	margin:0px 0px 5px;
+	margin:0 0 5px;
 	font-size: 1.3em;
 	font-weight: normal;
 	background-color: #fafafa;
