@@ -33,7 +33,7 @@ class AppHandler(BaseHTTPRequestHandler):
 
         fname, ext = path.splitext(self.path) # Splits the given string into the simple path and the extension of the final file(including the lading dot, ".html"")
         if ext in content_type.keys():
-            with open(self.path) as f:
+            with open(self.path, 'rb') as f:
                 self.send_response(200)
                 self.send_header('Content-type', content_type[ext])
                 self.end_headers()
@@ -51,7 +51,6 @@ class AppHandler(BaseHTTPRequestHandler):
             f = [f[:f.find("=")], f[f.find("=")+1:]]
             print f[0]
             print f[1]
-            print
 
         # Char reconstruction, to be added later
         # char_list = {'%20' : ' ',}
@@ -62,7 +61,7 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 
-def run(server=HTTPServer, handler=AppHandler, port=2523):
+def run(server=HTTPServer, handler=AppHandler, port=2525):
     server_address = ('', port)
     httpd = server(server_address, handler)
     print "Started the HTTP Server at port", port
