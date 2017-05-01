@@ -11,16 +11,17 @@
 <p>
     <button onclick="Silky_move()">Click Me</button>
 </p>
-<form align="center" style="color:darkorange">
+<form  id="regC" align="center" style="color:darkorange" method="post">
     Username:<br>
-    <input type ="text" name="UsernameBox" id="UserNAME"><br>
+    <input type ="text" name="UsernameBox" id="UserNAME" title="Username"><br>
     Password:<br>
-    <input type="password" name="PasswordBox" id="Parola1"><br>
+    <input type="password" name="PasswordBox" id="Parola1" title="Password"><br>
     Retype your Password:<br>
-    <input type="password" name="PasswordBox" id="Parola2"><br>
+    <input type="password" name="ConfirmBox" id="Parola2" title="Password"><br>
     E-mail:<br>
-    <input type="text" name="Email" id="email"><br>
+    <input type="text" name="Email" id="email" title="Email"><br>
     <button type="button" onclick="verificare()">Register</button>
+    <!--<input type="submit" -->
 </form>
 <script src="../JScripts/Autentificator.js"></script>
 <script src="../JScripts/Slide_anim.js"></script>

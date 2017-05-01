@@ -19,7 +19,6 @@ class AppHandler(BaseHTTPRequestHandler):
             '.png' : 'image/png',
             '.text': 'text/plain',
             '.txt' : 'text/plain',
-            '.ico' : 'image/x-icon'
         }
 
 
@@ -45,11 +44,25 @@ class AppHandler(BaseHTTPRequestHandler):
         logging.debug("HEAD")
 
     def do_POST(self):
-        question_id = str(self.rfile.read(int(self.headers['Content-Length'])))[3:]
+        print "POST"
+        form = str(self.rfile.read(int(self.headers['Content-Length']))).split('&')
+
+        for f in form:
+            f = [f[:f.find("=")], f[f.find("=")+1:]]
+            print f[0]
+            print f[1]
+            print
+
+        # Char reconstruction, to be added later
+        # char_list = {'%20' : ' ',}
+        #
+        # for f in form:
+        #     for c in char_list.keys():
+        #         f.replace(c, char_list[c])
 
 
 
-def run(server=HTTPServer, handler=AppHandler, port=2511):
+def run(server=HTTPServer, handler=AppHandler, port=2523):
     server_address = ('', port)
     httpd = server(server_address, handler)
     print "Started the HTTP Server at port", port

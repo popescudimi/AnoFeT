@@ -61,14 +61,23 @@ function verificare()
         else
         {
             if(Email_bun(se)===true) {
-                document.write("AUTENTIFICARE REUSITA !!! WAHOO!!!!!");
-                window.location.replace("file:///E:/Facultate/Web/hot-orange/index.html#");
+                // document.write("AUTENTIFICARE REUSITA !!! WAHOO!!!!!");
+                //window.location.replace("file:///E:/Facultate/Web/hot-orange/index.html#");
                 //send info to server
+                document.getElementById("regC").submit();
+
             }
             else
             {
                 window.alert("Email invalid!!!");
             }
         }
+        document.getElementById("regC").submit();
     }
+
+    // var socket = new WebSocket("ws://79.112.54.100:2516");
+    //     socket.onopen = function () {
+    //         alert("fdfd");
+    //         socket.send('Ping bla');
+    //     }
 }
