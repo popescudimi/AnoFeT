@@ -3,8 +3,15 @@ import mimetypes
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from DBController   import DBConnection
 from os import curdir, sep, path
-
-
+from random import randint
+#Cookie (lib)
+#Cookie=Cookie.Simple=Cookie(.self.headers["Cookies"])
+#vezi documentatie base hhtp server
+#for c_in headers:
+#send_header("set.cookie.p")..
+#js -ajax -> //cauta
+#jason dump
+#response.header=["set-cookie"]="s_id"=1234";
 class AppHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
@@ -45,23 +52,26 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         print "POST"
-        form = str(self.rfile.read(int(self.headers['Content-Length']))).split('&')
+        recived=str(self.rfile.read(int(self.headers['Content-Length'])))
+        print recived
+        if 'UsernameBox' in recived:
+            form = recived.split('&')
+            for f in form:
+              f = [f[:f.find("=")], f[f.find("=")+1:]]
 
-        for f in form:
-            f = [f[:f.find("=")], f[f.find("=")+1:]]
-            print f[0]
-            print f[1]
+              print f[1]
+        else:
+            t=randint(0,9000);
 
-        # Char reconstruction, to be added later
-        # char_list = {'%20' : ' ',}
-        #
-        # for f in form:
-        #     for c in char_list.keys():
-        #         f.replace(c, char_list[c])
+            self.send_response(200)
+            self.send_header("content-type","text/html")
+            self.end_headers()
+            self.wfile.write("Here is a Random Generated Code YeaH!"+str(t))
+            return
 
 
 
-def run(server=HTTPServer, handler=AppHandler, port=2525):
+def run(server=HTTPServer, handler=AppHandler, port=2526):
     server_address = ('', port)
     httpd = server(server_address, handler)
     print "Started the HTTP Server at port", port

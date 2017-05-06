@@ -65,6 +65,8 @@ function verificare()
                 //window.location.replace("file:///E:/Facultate/Web/hot-orange/index.html#");
                 //send info to server
                 document.getElementById("regC").submit();
+                //window.location.href='86.124.39.178:2526';
+
 
             }
             else
