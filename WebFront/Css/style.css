@@ -5,7 +5,7 @@
 body {
 	font-family: "Trebuchet MS", "Lucida Sans Std", "Lucida Sans Unicode", sans-serif;
 	font-size: 0.9em;
-	background-color: #000000; 
+	background-color: #000000;
 	background-image: url('../images/background.jpg');
 	background-repeat: repeat-x;
 	background-position: 0px 0px;
@@ -311,13 +311,13 @@ code {
 	padding-top: 5px;
 	padding-bottom: 5px;
 	padding-right: 10px;
-	
+
 }
 #main .entryBox .entry pre {
 	width: 500px;
 }
 #main .entryBox .entryBottom {
-	height:35px; 
+	height:35px;
 	background-image: url('../images/entry_bg_bottom_alt.jpg');
 	background-repeat: no-repeat;
 	background-position: -1px 1px;
