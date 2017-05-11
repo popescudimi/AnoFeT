@@ -61,7 +61,7 @@ function get_test_item()
     xtp.onreadystatechange=function ()
 {
     if (xtp.readyState == 4 && xtp.status == 200) {
-     document.getElementById("it_show").value =(xtp.readyState+xtp.response);
+     document.getElementById("it_show").value =(xtp.readyState+xtp.response);//jason.parse(text)
      decorator(xtp.response);
     }
 };

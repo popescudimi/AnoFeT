@@ -66,7 +66,7 @@ class AppHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("content-type","text/html")
             self.end_headers()
-            self.wfile.write("An Item!"+"Here is a Random Generated Code YeaH!"+str(t))
+            self.wfile.write("An Item!"+"Here is a Random Generated Code YeaH!"+str(t))#jason.dumps(content)
             return
 
 
