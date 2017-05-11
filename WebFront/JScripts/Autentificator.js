@@ -61,10 +61,12 @@ function verificare()
         else
         {
             if(Email_bun(se)===true) {
+                // document.write("AUTENTIFICARE REUSITA !!! WAHOO!!!!!");
+                //window.location.replace("file:///E:/Facultate/Web/hot-orange/index.html#");
                 //send info to server
                 document.getElementById("regC").submit();
-                // document.write("AUTENTIFICARE REUSITA !!! WAHOO!!!!!");
-                window.location.href = '/#';
+                //window.location.href='86.124.39.178:2526';
+
 
             }
             else
