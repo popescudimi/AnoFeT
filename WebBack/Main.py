@@ -1,11 +1,13 @@
 import logging
-import mimetypes
+import Cookie
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from DBController   import DBConnection
 from os import curdir, sep, path
 
 
 class AppHandler(BaseHTTPRequestHandler):
+
+
 
     def do_GET(self):
         content_type = {
@@ -21,13 +23,10 @@ class AppHandler(BaseHTTPRequestHandler):
             '.txt' : 'text/plain',
         }
 
-
-        print self.path
+        #self.
 
         if self.path == "/":
             self.path = "/index.html"
-        if self.path == "favico.ico":
-            return
 
         self.path =  "../WebFront" + self.path
 
@@ -37,7 +36,10 @@ class AppHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', content_type[ext])
                 self.end_headers()
-                self.wfile.write(f.read())
+                if self.path.endswith("index.html"):
+                    self.wfile.write(f.read().format(""))
+                else:
+                    self.wfile.write(f.read())
         return
 
     def do_HEAD(self):
@@ -49,8 +51,21 @@ class AppHandler(BaseHTTPRequestHandler):
 
         for f in form:
             f = [f[:f.find("=")], f[f.find("=")+1:]]
-            print f[0]
-            print f[1]
+            print f
+
+
+
+    def register_attempt(self, form):
+        if form[0][0] == "Username" and form[1][0] == "Password" and form[2][0] == "Confirm" and form[3][0] == "Email":
+            return True
+
+    def register(self, form):
+        for c in form[:][:2]:
+            if c not in "qwertyuiopasdfghjklzxcvbnm0123456789._":
+                return "Invalid characters.\nOnly alphanumeric characters, plus '.' and '_' are allowed."
+
+
+
 
         # Char reconstruction, to be added later
         # char_list = {'%20' : ' ',}
@@ -61,10 +76,11 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 
-def run(server=HTTPServer, handler=AppHandler, port=2525):
+def run(server=HTTPServer, handler=AppHandler, port=2526):
     server_address = ('', port)
     httpd = server(server_address, handler)
     print "Started the HTTP Server at port", port
     httpd.serve_forever()
+
 
 run()
