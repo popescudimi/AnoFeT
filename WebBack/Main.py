@@ -7,6 +7,16 @@ from os import curdir, sep, path
 
 class AppHandler(BaseHTTPRequestHandler):
 
+    db_conn = DBConnection.connect("PROJECT1", "project1", "localhost")
+
+    def format_path(self):
+        if self.path == "/":
+            self.path = "/index.html"
+
+        self.path =  "../WebFront" + self.path
+
+        return path.splitext(self.path)
+
 
 
     def do_GET(self):
@@ -23,35 +33,32 @@ class AppHandler(BaseHTTPRequestHandler):
             '.txt' : 'text/plain',
         }
 
-        #self.
 
-        if self.path == "/":
-            self.path = "/index.html"
 
-        self.path =  "../WebFront" + self.path
-
-        fname, ext = path.splitext(self.path) # Splits the given string into the simple path and the extension of the final file(including the lading dot, ".html"")
+        fpath, ext =  self.format_path() # Splits the given string into the simple path and the extension of the final file(including the lading dot, ".html")
         if ext in content_type.keys():
             with open(self.path, 'rb') as f:
                 self.send_response(200)
                 self.send_header('Content-type', content_type[ext])
                 self.end_headers()
-                if self.path.endswith("index.html"):
-                    self.wfile.write(f.read().format(""))
-                else:
-                    self.wfile.write(f.read())
-        return
 
-    def do_HEAD(self):
-        logging.debug("HEAD")
+                self.wfile.write(f.read())
+        return
 
     def do_POST(self):
         print "POST"
-        form = str(self.rfile.read(int(self.headers['Content-Length']))).split('&')
+        form = str(self.rfile.read(int(self.headers['Content-Length']))) # Read the message as a string
 
-        for f in form:
-            f = [f[:f.find("=")], f[f.find("=")+1:]]
-            print f
+        if form.find("item") > 0:
+            result = self.db_conn.execute("select title from items") # ce select vrei tu
+            # acum result e o matrice bidimensionala. Daca ai result[row][cell], row va fi index al randului pe care il
+            # vrei, iar cell va fi index-ul coloanei din tabel pe care o vrei. Ambii indecsi incep de la 0, nu de la 1
+            # Ex. result[0][2] imi va lua primul rand, si a treia coloana. Daca le vrei ca str faci str(result[x][y])
+
+        # for f in form.split('&'):
+        #     f = [f[:f.find("=")], f[f.find("=")+1:]]
+        #     print f
+
 
 
 
