@@ -25,14 +25,14 @@ function decorator (response) {
 
 
     //==========================
-    var len,info_array;
-    len = response.length;
-    info_array=response.split('!');
+    var info_response;
+    //pregatirea jsonului
+    info_response=JSON.parse(response);
 
-    var ph2=document.createTextNode(info_array[0]);
-    var ps=document.createTextNode("May 2000");
-    var pp1=document.createTextNode(info_array[1]);
-    var ps4=document.createTextNode(info_array[2]);
+    var ph2=document.createTextNode(info_response.item_name);
+    var ps=document.createTextNode(info_response.date_posted);
+    var pp1=document.createTextNode(info_response.item_description);
+    var ps4=document.createTextNode(info_response.publisher);
     //==========================
     //in reverse
     span.appendChild(ps);
