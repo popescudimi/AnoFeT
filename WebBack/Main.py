@@ -91,6 +91,23 @@ def item_title(selfie):
     querry = selfie.db_conn.execute("select * from (select * from items where title LIKE '%Title%' order by DBMS_RANDOM.RANDOM) where rownum<2")
     itmw=item_like_support(selfie,querry)
     return itmw
+#=========================
+#=====pt Search======
+def search_item(selfie,msg):
+    querry = selfie.db_conn.execute("select * from (select * from items where title LIKE '%"+msg+"%' order by DBMS_RANDOM.RANDOM) where rownum<2")
+    print "aici"
+    print msg;
+    print querry;
+    if str(querry)!="[]":
+        itmw=item_like_support(selfie,querry)
+    else:
+        itmw=json.dumps({'item_name': "Void Error",
+                               'date_posted': "Search Harder!",
+                               'item_description': "This is not an Error ", 'publisher': "Red Screen of Error"}, indent=4,
+                              separators=(',', ': '))
+
+    return itmw
+
 #===============================================================================================================================================
 #more code here to be addded
 #coming sooon....
@@ -106,12 +123,41 @@ def dispatcher(selfie,raw_request):
         for f in form:
             f = [f[:f.find("=")], f[f.find("=") + 1:]]
             print f[1]
-    else:
-        # prelouarea datelor din db si procesarea lor intr-un format inteligibl
-        # querry = self.db_conn.execute("select * from (select * from items order by DBMS_RANDOM.RANDOM) where rownum<2")
-        raspuns_json = item_pub(selfie)
+    if 'ItemP' in raw_request:
+        raspuns_json = item_item(selfie)
         return raspuns_json
+    if 'FestivalP' in raw_request:
+        raspuns_json = item_festival(selfie)
+        return raspuns_json
+    if 'CeremonyP' in raw_request:
+        raspuns_json = item_ceremony(selfie)
+        return raspuns_json
+    if 'PubP' in raw_request:
+        raspuns_json =item_pub(selfie)
+        return raspuns_json
+    if 'RestaurantP' in raw_request:
+        raspuns_json=item_restaurant(selfie)
+        return raspuns_json
+    if 'HotelP' in raw_request:
+        raspuns_json=item_hotel(selfie)
+        return raspuns_json
+    if 'PartyP'in raw_request:
+        raspuns_json = item_party(selfie)
+        return raspuns_json
+    if 'TitleP'in raw_request:
+        raspuns_json = item_title(selfie)
+        return raspuns_json
+    if 'Sbox' in raw_request:
+        msg=raw_request.split('>')
+        raspuns_json = search_item(selfie,msg[1])
+        return raspuns_json
+    raspuns_json = json.dumps({'item_name': "Magical Error",
+                               'date_posted': "It's an error date :)",
+                               'item_description': "Those errors man.... I mean look at them... ", 'publisher': "Red Screen of Error"}, indent=4,
+                              separators=(',', ': '))
+    return raspuns_json;
 
+#===================================================================================================
 class AppHandler(BaseHTTPRequestHandler):
     db_conn = DBConnection.connect("project1", "project1", "localhost") #la mine PROJECT1 e project1,modifica daca vrei sa iti mearga
 

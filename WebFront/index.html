@@ -66,9 +66,10 @@
         <li>
           <h2>Search</h2>
           <div id="searchform">
-            <form method="get" id="searchbox" action="#">
-              <input type="text" value="" />
+            <form method="post" id="searchbox">
+              <input id="Sbox" type="text" value="" />
             </form>
+            <button onclick="Pre_Seek()">Search</button>
           </div>
         </li>
 
@@ -78,8 +79,8 @@
           <h2>Categories</h2>
           <ul>
             <li><a href="Pages/Items_Page.html">Items</a> </li>
-            <li><a href="#">Festivals</a> </li>
-            <li><a href="#">Ceremonies</a> </li>
+            <li><a href="Pages/Festivals_Page.html">Festivals</a> </li>
+            <li><a href="Pages/Ceremonyes_Page.html">Ceremonies</a> </li>
             <li><a href="#">Restaurants</a> </li>
             <li><a href="#">Pubs</a> </li>
             <li><a href="#">Hotels</a> </li>
@@ -98,6 +99,7 @@
   </div>
   <div class="clear"></div>
 </div>
+<script src="JScripts/Seeker.js"></script>
 <script src="JScripts/Autentificator.js"></script>
 <script src="JScripts/Slide_anim.js"></script>
 </body>

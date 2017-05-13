@@ -55,16 +55,17 @@ function decorator (response) {
 }
 
 
-function get_test_item()
+function get_test_item(pgn,req_type)
 {
     var xtp=new XMLHttpRequest();
     xtp.onreadystatechange=function ()
 {
     if (xtp.readyState == 4 && xtp.status == 200) {
-     document.getElementById("it_show").value =(xtp.readyState+xtp.response);//jason.parse(text)
+     //document.getElementById("it_show").value =(xtp.readyState+xtp.response);//jason.parse(text)
      decorator(xtp.response);
     }
 };
-    xtp.open("POST", "Items_Page.html", true);
-    xtp.send("Stringu");
+    xtp.open("POST",pgn, true);
+    xtp.send(req_type);
 }
+//"Items_Page.html"
