@@ -109,20 +109,61 @@ def search_item(selfie,msg):
     return itmw
 
 #===============================================================================================================================================
-#more code here to be addded
-#coming sooon....
-#
+#====Register data Processer====
+def reg_data_processer(reg_request):
+    it=0
+    vect_info = ["" for x in range(6)]
+    form = reg_request.split('&')
+    for f in form:
+        f = [f[:f.find("=")], f[f.find("=") + 1:]]
+        vect_info[it]=f[1]
+        it=it+1
+    vect_info[3]=vect_info[3].replace('%40','@')
+    return vect_info
+
+#==========================Verifiers=====================================(care vrea poate sa faca o verificare mult mai stricta si mai calumea)
+#informatiile pt inregistrare sunt verificate sa fie bune
+def verify_corect_reg_info(request):
+    if len(request[0])>3:
+        if len(request[1])>5:
+            if(request[1]==request[2]):
+                if('@' in request[3] and '.' in request[3] and len(request[3])>8):
+                    if(len(request[4])>3):
+                        if(len(request[5])>3):
+                            return True
+    return False
+#verifica daca nu este deja un utilizator cu un username asemanator sau cu email la fel
+def verify_database_for_reg(selfie,request):
+    uq="select * from site_users where USERNAME LIKE '%"+request[0]+"%'"
+    unameQ=selfie.db_conn.execute(uq)
+    emailQ=selfie.db_conn.execute("select * from site_users where EMAIL LIKE '%"+request[3]+"%'")
+    if(str(unameQ)=='[]' and str(emailQ)=='[]'):
+        return True
+    return False
 #===============================================================================================================================================
+def inregistrare(selfie,raw_request):
+    processed_request=reg_data_processer(raw_request)
+    if(verify_corect_reg_info(processed_request)==True):
+        if(verify_database_for_reg(selfie,processed_request)==True):
+            count=str(selfie.db_conn.execute("select count(*) from site_users")).split('(')
+            number=int(count[1].split(',')[0])
+            print number
+            number=number+1
+            #insertop="insert into site_users VALUES ("+str(number)+","+"'"+processed_request[5]+"'"+","+"'"+processed_request[4]+"'"+","+"'"+processed_request[3]+"'"+","+"TO_TIMESTAMP(SYSDATE)"+","+"'"+processed_request[0]+"'"+","+"'"+processed_request[1]+"'"+","+"'"+"A Question?"+"'"+","+"'"+"Maybye"+"'"+")"
+            #str(insertop);
+            #print insertop
+            selfie.db_conn.callProcedure("insert_site_users",(number,processed_request[5],processed_request[4],processed_request[3],processed_request[0],processed_request[1],"A Question?","Maybye"))
+            #selfie.connection.comit()
+            print "am facut inregistrarea"
+            #to be continued
+
 
 #==========================================dispatcher==============================================
 #isi da seama ce fel de request primeste si trimite inapoi raspunsul bun
 #not ready yet -just for getting the ideea scope-
 def dispatcher(selfie,raw_request):
     if 'UsernameBox' in raw_request:
-        form = raw_request.split('&')
-        for f in form:
-            f = [f[:f.find("=")], f[f.find("=") + 1:]]
-            print f[1]
+        inregistrare(selfie,raw_request)
     if 'ItemP' in raw_request:
         raspuns_json = item_item(selfie)
         return raspuns_json

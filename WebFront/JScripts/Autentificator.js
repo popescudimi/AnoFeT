@@ -24,11 +24,13 @@ function Email_bun(x)
 }
 function verificare()
 {
-    var sn,sp1,sp2,se,ok1=0;
+    var sn,sp1,sp2,se,ok1=0,fn,na;
     sn=document.getElementById('UserNAME').value;
     sp1=document.getElementById('Parola1').value;
     sp2=document.getElementById('Parola2').value;
     se=document.getElementById('email').value;
+    fn=document.getElementById('Fname').value;
+    na=document.getElementById('Name').value;
     if(sn=="")
     {
         window.alert("Te rog completeaza campul UserNAME");
@@ -49,7 +51,13 @@ function verificare()
                     window.alert("Email plz");
                 }
                 else
-                    ok1=1;
+                    if(fn.length()<3)
+                        window.alert("Introdu un First Name Valid");
+                    else
+                        if (na.length()<3)
+                            window.alert("Introdu un Nume Valid");
+                        else
+                            ok1=1;
         }
     }
     if(ok1==1)
@@ -77,9 +85,4 @@ function verificare()
         document.getElementById("regC").submit();
     }
 
-    // var socket = new WebSocket("ws://79.112.54.100:2516");
-    //     socket.onopen = function () {
-    //         alert("fdfd");
-    //         socket.send('Ping bla');
-    //     }
 }
