@@ -3,7 +3,7 @@ import mimetypes
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from DBController   import DBConnection
 from os import curdir, sep, path
-from random import randint
+import random ,string
 import json
 import calendar
 #Cookie (lib)
@@ -15,7 +15,8 @@ import calendar
 #jason dump
 #response.header=["set-cookie"]="s_id"=1234";
 
-
+#global
+token_vector={}
 #=================================pt transformarea unei date primite din SQL in ceva calumea
 def convert_todate(an, luna, zi):
     an_bun=an.split('(')
@@ -141,6 +142,24 @@ def verify_database_for_reg(selfie,request):
         return True
     return False
 #===============================================================================================================================================
+#The Tokenizer
+def token_baker():
+    token="";
+    for c in range(1,10):
+        t=random.randint(0,1);
+        if(t==0):
+            char=str(random.randint(0,9));
+            token=token+char;
+        else:
+            char=str(random.choice(string.lowercase))
+            token=token+char
+    print token
+    return token
+
+
+
+
+#===============================================================================================================================================
 def inregistrare(selfie,raw_request):
     processed_request=reg_data_processer(raw_request)
     if(verify_corect_reg_info(processed_request)==True):
@@ -158,12 +177,48 @@ def inregistrare(selfie,raw_request):
             #to be continued
 
 
+
+
+def logare(selfie,raw_request):
+    request=raw_request.split("<!>")
+    request[0]=request[0].replace("Log","",1)
+    querry="select * from site_users where USERNAME LIKE '"+request[0]+"' AND PASSWORD LIKE '"+request[1]+"'";
+    q_serch=selfie.db_conn.execute(querry);
+    if(str(q_serch)=='[]'):
+        raspuns=json.dumps({"Response":"Bad","Token":"0"},indent = 4, separators = (',', ': '))
+        return raspuns
+    else:
+        fortune_cookie=token_baker()
+        global token_vector
+        token_vector[fortune_cookie] = request[0]
+        raspuns = json.dumps({"Response": "Good", "Token": fortune_cookie}, indent=4, separators=(',', ': '))
+        return raspuns
+
+def validare_token(selfie,raw_request):
+    request=raw_request.split(',');
+    global token_vector
+    if request[1] in token_vector.keys() :
+        raspuns=json.dumps({"verify":"Ok"},indent=4,separators=(',', ': '))
+        return raspuns
+    else:
+        raspuns = json.dumps({"verify": "No"}, indent=4, separators=(',', ': '))
+        return raspuns
+
+
+
 #==========================================dispatcher==============================================
 #isi da seama ce fel de request primeste si trimite inapoi raspunsul bun
 #not ready yet -just for getting the ideea scope-
 def dispatcher(selfie,raw_request):
     if 'UsernameBox' in raw_request:
         inregistrare(selfie,raw_request)
+    #nu uita de return
+    if 'Log' in raw_request and '<!>' in raw_request:
+        raspuns_json=logare(selfie,raw_request)
+        return raspuns_json
+    if 'Token,' in raw_request:
+        raspuns_json=validare_token(selfie,raw_request)
+        return raspuns_json
     if 'ItemP' in raw_request:
         raspuns_json = item_item(selfie)
         return raspuns_json
