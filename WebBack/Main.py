@@ -1,7 +1,7 @@
 from os                 import curdir, sep, path
 from DBController       import DBConnection
 from BaseHTTPServer     import BaseHTTPRequestHandler, HTTPServer
-from ServerFunctions    import register, login, validate_token
+from ServerFunctions    import register, login, validate_token, item_category
 import json
 import string
 import random
@@ -38,44 +38,27 @@ class AppHandler(BaseHTTPRequestHandler):
             # nu uita de return
 
         if 'Log' in raw_request and '<!>' in raw_request:
-            json_response = login(self, raw_request)
-            return json_response
+            return login(self, raw_request)
 
         if 'Token,' in raw_request:
-            json_response = validate_token(self, raw_request)
-            return json_response
+            return validate_token(self, raw_request)
 
         if 'ItemP' in raw_request:
-            json_response = item_item(self)
-            return json_response
-
+            return item_category(self, "item")
         if 'FestivalP' in raw_request:
-            json_response = item_festival(self)
-            return json_response
-
+            return item_category(self, "festival")
         if 'CeremonyP' in raw_request:
-            json_response = item_ceremony(self)
-            return json_response
-
+            return item_category(self, "ceremony")
         if 'PubP' in raw_request:
-            json_response = item_pub(self)
-            return json_response
-
+            return item_category(self, "pub")
         if 'RestaurantP' in raw_request:
-            json_response = item_restaurant(self)
-            return json_response
-
+            return item_category(self, "restaurant")
         if 'HotelP' in raw_request:
-            json_response = item_hotel(self)
-            return json_response
-
+            return item_category(self, "hotel")
         if 'PartyP' in raw_request:
-            json_response = item_party(self)
-            return json_response
-
+            return item_category(self, "party")
         if 'TitleP' in raw_request:
-            json_response = item_title(self)
-            return json_response
+            return item_category(self, "title")
 
         if 'Sbox' in raw_request:
             msg = raw_request.split('>')
