@@ -1,13 +1,9 @@
 from os                 import curdir, sep, path
 from DBController       import DBConnection
 from BaseHTTPServer     import BaseHTTPRequestHandler, HTTPServer
-from ServerFunctions    import register, login, validate_token, item_category
+from ServerFunctions    import register, login, validate_token, item_category, search_item
 import json
-import string
-import random
-import logging
-import calendar
-import mimetypes
+
 
 
 #Cookie (lib)
@@ -23,6 +19,17 @@ import mimetypes
 
 #===================================================================================================
 class AppHandler(BaseHTTPRequestHandler):
+
+    content_type = {'.css' : 'text/css',
+                    '.gif' : 'image/gif',
+                    '.htm' : 'text/html',
+                    '.html': 'text/html',
+                    '.jpeg': 'image/jpeg',
+                    '.jpg' : 'image/jpg',
+                    '.js'  : 'text/javascript',
+                    '.png' : 'image/png',
+                    '.text': 'text/plain',
+                    '.txt' : 'text/plain'}
 
     db_conn = DBConnection.connect("project1", "project1", "localhost") #la mine PROJECT1 e project1,modifica daca vrei sa iti mearga
 
@@ -61,36 +68,22 @@ class AppHandler(BaseHTTPRequestHandler):
             return item_category(self, "title")
 
         if 'Sbox' in raw_request:
-            msg = raw_request.split('>')
-            json_response = search_item(self, msg[1])
-            return json_response
+            return search_item(self, raw_request.split('>')[1])
 
-        json_response = json.dumps({'item_name': "Magical Error",
-                                    'date_posted': "It's an error date :)",
-                                    'item_description': "Those errors man.... I mean look at them... ",
-                                    'publisher': "Red Screen of Error"}, indent=4,
-                                   separators=(',', ': '))
-        return json_response
+        return json.dumps({'item_name'       : "Magical Error",
+                           'date_posted'     : "It's an error date :)",
+                           'item_description': "Those errors man.... I mean look at them... ",
+                           'publisher'       : "Red Screen of Error"},
+                            indent=4,
+                            separators=(',', ': '))
+
 
     def do_HEAD(self):
         print 'HEAD'
 
+
     def do_GET(self):
-        content_type = {
-            '.css' : 'text/css',
-            '.gif' : 'image/gif',
-            '.htm' : 'text/html',
-            '.html': 'text/html',
-            '.jpeg': 'image/jpeg',
-            '.jpg' : 'image/jpg',
-            '.js'  : 'text/javascript',
-            '.png' : 'image/png',
-            '.text': 'text/plain',
-            '.txt' : 'text/plain',
-        }
-
         print self.path
-
         if self.path == "/":
             self.path = "/index.html"
         if self.path == "favico.ico":
@@ -99,10 +92,10 @@ class AppHandler(BaseHTTPRequestHandler):
         self.path =  "../WebFront" + self.path
 
         fname, ext = path.splitext(self.path) # Splits the given string into the simple path and the extension of the final file(including the lading dot, ".html"")
-        if ext in content_type.keys():
+        if ext in self.content_type.keys():
             with open(self.path, 'rb') as f:
                 self.send_response(200)
-                self.send_header('Content-type', content_type[ext])
+                self.send_header('Content-type', self.content_type[ext])
                 self.end_headers()
                 self.wfile.write(f.read())
         return
@@ -112,15 +105,14 @@ class AppHandler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         print "POST"
-        recived=str(self.rfile.read(int(self.headers['Content-Length'])))
-        raspuns_json=dispatcher(self,recived)
+        received = str(self.rfile.read(int(self.headers['Content-Length'])))
+        raspuns_json = self.dispatcher(received)
 
         #===========================send response to webpage====================
-
-        #t=randint(0,9000);
         self.send_response(200)
         #self.send_header("content-type","text/html")
         self.send_header("content-type","application/json")
+        # pai daca tu trimiti json doar inapoi... ce kkt sa iti primeasca saraca pagina?
         self.end_headers()
         self.wfile.write(raspuns_json)#jason.dumps(content)
         return
