@@ -20,12 +20,12 @@ def process_register_data(register_request):
     return vect_info
 
 
-def inregistrare(request_handler, raw_request):
+def register(request_handler, raw_request):
     processed_request = process_register_data(raw_request)
     if verify_corect_register_info(processed_request) == True and verify_database_for_duplicates(request_handler, processed_request) == True:
             id = int(request_handler.db_conn.execute("select max(id) from site_users")) + 1
             print id
-            request_handler.db_conn.callProcedure("insert_site_users",(id,processed_request[5],processed_request[4],processed_request[3],processed_request[0],processed_request[1],"A Question?","Maybye"))
+            request_handler.db_conn.callProcedure("insert_site_users",[id,processed_request[5],processed_request[4],processed_request[3],processed_request[0],processed_request[1],"A Question?","Maybye"])
             print "Register successful"
 
             #insertop="insert into site_users VALUES ("+str(number)+","+"'"+processed_request[5]+"'"+","+"'"+processed_request[4]+"'"+","+"'"+processed_request[3]+"'"+","+"TO_TIMESTAMP(SYSDATE)"+","+"'"+processed_request[0]+"'"+","+"'"+processed_request[1]+"'"+","+"'"+"A Question?"+"'"+","+"'"+"Maybye"+"'"+")"

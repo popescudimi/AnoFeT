@@ -1,10 +1,10 @@
+from Login      import login
+from Register   import register
 import json
 import string
 import random
-import logging
 import calendar
-import mimetypes
-import Register
+
 
 
 #global
@@ -105,42 +105,9 @@ def search_item(selfie,msg):
 
 #===============================================================================================================================================
 #The Tokenizer
-def token_baker():
-    token="";
-    for c in range(1,10):
-        t=random.randint(0,1);
-        if(t==0):
-            char=str(random.randint(0,9));
-            token=token+char;
-        else:
-            char=str(random.choice(string.lowercase))
-            token=token+char
-    print token
-    return token
-
-
 
 
 #===============================================================================================================================================
-
-
-
-
-
-def logare(selfie,raw_request):
-    request=raw_request.split("<!>")
-    request[0]=request[0].replace("Log","",1)
-    querry="select * from site_users where USERNAME LIKE '"+request[0]+"' AND PASSWORD LIKE '"+request[1]+"'";
-    q_serch=selfie.db_conn.execute(querry);
-    if(str(q_serch)=='[]'):
-        raspuns=json.dumps({"Response":"Bad","Token":"0"},indent = 4, separators = (',', ': '))
-        return raspuns
-    else:
-        fortune_cookie=token_baker()
-        global token_vector
-        token_vector[fortune_cookie] = request[0]
-        raspuns = json.dumps({"Response": "Good", "Token": fortune_cookie}, indent=4, separators=(',', ': '))
-        return raspuns
 
 def validare_token(selfie,raw_request):
     request=raw_request.split(',');

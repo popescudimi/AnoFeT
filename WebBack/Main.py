@@ -1,7 +1,7 @@
 from os                 import curdir, sep, path
 from DBController       import DBConnection
 from BaseHTTPServer     import BaseHTTPRequestHandler, HTTPServer
-from ServerFunctions    import inregistrare
+from ServerFunctions    import register, login
 import json
 import string
 import random
@@ -26,17 +26,19 @@ class AppHandler(BaseHTTPRequestHandler):
 
     db_conn = DBConnection.connect("project1", "project1", "localhost") #la mine PROJECT1 e project1,modifica daca vrei sa iti mearga
 
+    active_tokens = {}
+
     def dispatcher(self, raw_request):
         # ==========================================dispatcher==============================================
         # isi da seama ce fel de request primeste si trimite inapoi raspunsul bun
         # not ready yet -just for getting the ideea scope-
 
         if 'UsernameBox' in raw_request:
-            inregistrare(self, raw_request)
+            register(self, raw_request)
             # nu uita de return
 
         if 'Log' in raw_request and '<!>' in raw_request:
-            json_response = logare(self, raw_request)
+            json_response = login(self, raw_request)
             return json_response
 
         if 'Token,' in raw_request:
