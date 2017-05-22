@@ -1,7 +1,7 @@
 from os                 import curdir, sep, path
 from DBController       import DBConnection
 from BaseHTTPServer     import BaseHTTPRequestHandler, HTTPServer
-from ServerFunctions    import register, login
+from ServerFunctions    import register, login, validate_token
 import json
 import string
 import random
@@ -42,7 +42,7 @@ class AppHandler(BaseHTTPRequestHandler):
             return json_response
 
         if 'Token,' in raw_request:
-            json_response = validare_token(self, raw_request)
+            json_response = validate_token(self, raw_request)
             return json_response
 
         if 'ItemP' in raw_request:

@@ -1,14 +1,9 @@
-from Login      import login
-from Register   import register
+from Login        import login
+from Register     import register
+from SessionCheck import validate_token
 import json
-import string
-import random
 import calendar
 
-
-
-#global
-token_vector={}
 #=================================pt transformarea unei date primite din SQL in ceva calumea
 def convert_todate(an, luna, zi):
     an_bun=an.split('(')
@@ -102,23 +97,6 @@ def search_item(selfie,msg):
     return itmw
 
 #===============================================================================================================================================
-
 #===============================================================================================================================================
 #The Tokenizer
-
-
 #===============================================================================================================================================
-
-def validare_token(selfie,raw_request):
-    request=raw_request.split(',');
-    global token_vector
-    if request[1] in token_vector.keys() :
-        raspuns=json.dumps({"verify":"Ok"},indent=4,separators=(',', ': '))
-        return raspuns
-    else:
-        raspuns = json.dumps({"verify": "No"}, indent=4, separators=(',', ': '))
-        return raspuns
-
-
-
-
