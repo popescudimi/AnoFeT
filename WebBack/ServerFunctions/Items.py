@@ -25,21 +25,21 @@ def item_support(request_handler, querry):
 
 def item_category(request_handler, category):
     if category == "item":
-        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Item%' order by DBMS_RANDOM.RANDOM) where rownum<2"))
+        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Item%'                                order by DBMS_RANDOM.RANDOM) where rownum<2"))
     if category == "festival":
-        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Festival%' or title LIKE '%Contest%' order by DBMS_RANDOM.RANDOM) where rownum<2"))
+        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Festival%' or title LIKE '%Contest%'  order by DBMS_RANDOM.RANDOM) where rownum<2"))
     if category == "ceremony":
         return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Ceremony%' or title LIKE '%Gathering%'order by DBMS_RANDOM.RANDOM) where rownum<2"))
     if category == "pub":
-        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Pub%' or title LIKE '%Cafe%' order by DBMS_RANDOM.RANDOM) where rownum<2"))
+        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Pub%' or title LIKE '%Cafe%'          order by DBMS_RANDOM.RANDOM) where rownum<2"))
     if category == "restaurant":
-        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Restaurant%' order by DBMS_RANDOM.RANDOM) where rownum<2"))
+        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Restaurant%'                          order by DBMS_RANDOM.RANDOM) where rownum<2"))
     if category == "hotel":
-        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Hotel%' order by DBMS_RANDOM.RANDOM) where rownum<2"))
+        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Hotel%'                               order by DBMS_RANDOM.RANDOM) where rownum<2"))
     if category == "party":
-        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Party%' order by DBMS_RANDOM.RANDOM) where rownum<2"))
+        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Party%'                               order by DBMS_RANDOM.RANDOM) where rownum<2"))
     if category == "title":
-        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Title%' order by DBMS_RANDOM.RANDOM) where rownum<2"))
+        return item_support(request_handler, request_handler.db_conn.execute("select * from (select * from items where title LIKE '%Title%'                               order by DBMS_RANDOM.RANDOM) where rownum<2"))
     #TODO !!! default case !!!
 
 

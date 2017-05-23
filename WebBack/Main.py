@@ -83,12 +83,11 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
     def do_GET(self):
-        print self.path
-        if self.path == "/":
-            self.path = "/index.html"
         if self.path == "favico.ico":
             return
 
+        if self.path == "/":
+            self.path = "/index.html"
         self.path =  "../WebFront" + self.path
 
         fname, ext = path.splitext(self.path) # Splits the given string into the simple path and the extension of the final file(including the lading dot, ".html"")
@@ -98,9 +97,6 @@ class AppHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type', self.content_type[ext])
                 self.end_headers()
                 self.wfile.write(f.read())
-        return
-
-
 
 
     def do_POST(self):
@@ -124,5 +120,6 @@ def run(server=HTTPServer, handler=AppHandler, port=2526):
     httpd = server(server_address, handler)
     print "Started the HTTP Server at port", port
     httpd.serve_forever()
+
 
 run()
