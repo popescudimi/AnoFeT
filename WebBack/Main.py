@@ -78,10 +78,6 @@ class AppHandler(BaseHTTPRequestHandler):
                             separators=(',', ': '))
 
 
-    def do_HEAD(self):
-        print 'HEAD'
-
-
     def do_GET(self):
         if self.path == "favico.ico":
             return
@@ -121,5 +117,5 @@ def run(server=HTTPServer, handler=AppHandler, port=2526):
     print "Started the HTTP Server at port", port
     httpd.serve_forever()
 
-
-run()
+if __name__ == "__main__":
+    run()
