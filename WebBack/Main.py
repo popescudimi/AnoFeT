@@ -111,11 +111,13 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 
-def run(server=HTTPServer, handler=AppHandler, port=2526):
+def run(server=HTTPServer, handler=AppHandler, port=2525):
     server_address = ('', port)
     httpd = server(server_address, handler)
     print "Started the HTTP Server at port", port
     httpd.serve_forever()
+
+
 
 if __name__ == "__main__":
     run()

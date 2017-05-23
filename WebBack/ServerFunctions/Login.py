@@ -21,6 +21,7 @@ def login(request_handler, raw_request):
     else:
         token = generate_token()
         request_handler.active_tokens[token] = request[0]
+        print request_handler.active_tokens
         response = json.dumps({"Response": "Good", "Token": token}, indent=4, separators=(',', ': '))
     print response
     return response
