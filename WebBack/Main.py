@@ -100,6 +100,7 @@ class AppHandler(BaseHTTPRequestHandler):
         received = str(self.rfile.read(int(self.headers['Content-Length'])))
         raspuns_json = self.dispatcher(received)
 
+        print self.active_tokens
         #===========================send response to webpage====================
         self.send_response(200)
         #self.send_header("content-type","text/html")
