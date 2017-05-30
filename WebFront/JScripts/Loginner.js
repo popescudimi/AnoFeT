@@ -36,7 +36,9 @@ function Log_aspect() {
     var a;
     a="Welcome "+localStorage.getItem("Uname");
     document.getElementById("Login").textContent=a;
-
+    document.getElementById("Login").href="http://localhost:2526/Pages/AccountPage.html";
+    document.getElementById("Register").textContent="Logout";
+    document.getElementById("Register").href="http://localhost:2526/Pages/DelogPage.html";
 }
 
 function check_token()
@@ -54,4 +56,9 @@ function check_token()
         chk.open("POST", "index.html", true);
         chk.send("Token,"+localStorage.getItem("tok"));
     }
+}
+function logout() {
+    localStorage.setItem("Uname", "");
+    localStorage.setItem("tok", "");
+    window.location.replace('http://localhost:2526/');
 }

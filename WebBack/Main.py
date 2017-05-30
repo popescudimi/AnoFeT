@@ -1,8 +1,9 @@
 from os                 import curdir, sep, path
 from DBController       import DBConnection
 from BaseHTTPServer     import BaseHTTPRequestHandler, HTTPServer
-from ServerFunctions    import register, login, validate_token, item_category, search_item
+from ServerFunctions    import register, item_category, search_item
 import json
+import random
 
 
 
@@ -16,7 +17,45 @@ import json
 #response.header=["set-cookie"]="s_id"=1234";
 
 
+#global
+token_vector={}
 
+#====================================================
+def generate_token():
+    token = ""
+    for c in range(1, 10):
+        if(random.randint(0,1) == 0):   # Digit in token
+            token = token + str(random.randint(0,9))
+        else:                           # Letter in token
+            token = token + str(random.choice("abcdefghijklmnopqrstuvwxyz"))
+    return token
+
+
+
+def validare_token(selfie,raw_request):
+    request=raw_request.split(',')
+    global token_vector
+    if request[1] in token_vector.keys() :
+        raspuns=json.dumps({"verify":"Ok"},indent=4,separators=(',', ': '))
+        return raspuns
+    else:
+        raspuns = json.dumps({"verify": "No"}, indent=4, separators=(',', ': '))
+        return raspuns
+
+def logare(selfie, raw_request):
+    request = raw_request.split("<!>")
+    request[0] = request[0].replace("Log", "", 1)
+    querry = "select * from site_users where USERNAME LIKE '" + request[0] + "' AND PASSWORD LIKE '" + request[1] + "'"
+    q_serch = selfie.db_conn.execute(querry);
+    if (str(q_serch) == '[]'):
+        raspuns = json.dumps({"Response": "Bad", "Token": "0"}, indent=4, separators=(',', ': '))
+        return raspuns
+    else:
+        fortune_cookie = generate_token()
+        global token_vector
+        token_vector[fortune_cookie] = request[0]
+        raspuns = json.dumps({"Response": "Good", "Token": fortune_cookie}, indent=4, separators=(',', ': '))
+        return raspuns
 #===================================================================================================
 class AppHandler(BaseHTTPRequestHandler):
 
@@ -33,7 +72,6 @@ class AppHandler(BaseHTTPRequestHandler):
 
     db_conn = DBConnection.connect("project1", "project1", "localhost") #la mine PROJECT1 e project1,modifica daca vrei sa iti mearga
 
-    active_tokens = {}
 
     def dispatcher(self, raw_request):
         # ==========================================dispatcher==============================================
@@ -41,14 +79,14 @@ class AppHandler(BaseHTTPRequestHandler):
         # not ready yet -just for getting the ideea scope-
 
         if 'UsernameBox' in raw_request:
-            register(self, raw_request)
+            return register(self, raw_request)
             # nu uita de return
 
         if 'Log' in raw_request and '<!>' in raw_request:
-            return login(self, raw_request)
+            return logare(self, raw_request)
 
         if 'Token,' in raw_request:
-            return validate_token(self, raw_request)
+            return validare_token(self, raw_request)
 
         if 'ItemP' in raw_request:
             return item_category(self, "item")
@@ -112,7 +150,7 @@ class AppHandler(BaseHTTPRequestHandler):
 
 
 
-def run(server=HTTPServer, handler=AppHandler, port=2525):
+def run(server=HTTPServer, handler=AppHandler, port=2526):
     server_address = ('', port)
     httpd = server(server_address, handler)
     print "Started the HTTP Server at port", port
