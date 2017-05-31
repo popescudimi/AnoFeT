@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Review it!</title>
+    <link rel="stylesheet" type="text/css" href="../Css/style.css">
+</head>
+<body onload="get_the_item();get_reviews();">
+
+<div id="wrapp">
+  <div id="header">
+    <div id="HederTitle">
+      <h1> View and Review</h1>
+      <span>Items,Places and More...</span>
+    </div>
+      <div id="BottomHeader">
+      <div id="BottomHeaderWrapp">
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+
+<h2 align="left" style="color:Orange;font-size:200%">Latest Reviews</h2>
+ <div id=wrappinner">
+    <h2>Latest Reviews</h2>
+    <div id="main">
+      </div>
+    <div class="navigation">
+        <div class="alignleft"></div>
+        <div class="alignright"></div>
+      </div>
+
+     <div id="sidebar">
+         <h2 align="right">Leave a review</h2>
+         <textarea rows="10" cols="80" id="reviu">
+         </textarea>
+         <button onclick="submit_review()">Submit Review</button>
+         <p style="color: orange">*Remember that you need to be loged in to submit reviews*</p>
+    </div>
+ </div>
+
+</div>
+<script src="../JScripts/Data_Flux.js"></script>
+<script src="../JScripts/Data_Flux_Reviews.js"></script>
+<script src="../JScripts/Item_Requester.js"></script>
+</body>
+</html>
