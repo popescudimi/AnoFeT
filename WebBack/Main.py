@@ -72,13 +72,16 @@ class AppHandler(BaseHTTPRequestHandler):
                     '.text': 'text/plain',
                     '.txt' : 'text/plain'}
 
-    db_conn = DBConnection.connect("project1", "project1", "localhost") #la mine PROJECT1 e project1,modifica daca vrei sa iti mearga
+    db_conn = DBConnection.connect("student", "STUDENT", "localhost") #la mine PROJECT1 e project1,modifica daca vrei sa iti mearga
 
 
     def dispatcher(self, raw_request):
         # ==========================================dispatcher==============================================
         # isi da seama ce fel de request primeste si trimite inapoi raspunsul bun
         # not ready yet -just for getting the ideea scope-
+
+        if 'MyItem<!>' in raw_request:
+            return public_getter(self, raw_request, token_vector)
 
         if 'UsernameBox' in raw_request:
             return register(self, raw_request)
