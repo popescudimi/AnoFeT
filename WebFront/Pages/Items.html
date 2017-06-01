@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Items</title>
+    <link rel="stylesheet" type="text/css" href="../Css/style.css">
+</head>
+<body>
+<h1 align="center" style="color:orange">CREATE ITEM</h1><br><br>
+<form  id="Enter informations" align="center" style="color:darkorange" method="post">
+    <p>Title</p>
+    <input type="text" id="TitleT" title="Title"><br>
+    <p>Description</p>
+    <textarea rows="5" cols="25" id="description">
+         </textarea>
+    <p>Category</p>
+    <select>
+        <option value="items">Items</option>
+        <option value="festivals">Festivals</option>
+        <option value="ceremonies">Ceremonies</option>
+        <option value="restaurants">Restaurants</option>
+        <option value="pubs">Pubs</option>
+        <option value="hotels">Hotels</option>
+        <option value="parties">Parties></option>
+        <option value="titles">Titles</option>
+</select>
+    <br>
+    <input type="checkbox" name="private" value="yes"> Private item
+    <input type="checkbox" name="non-private" value="no" checked="checked"> Non-private item <br>
+    <button onclick="creater()">Create</button>
+</form>
+</body>
+</html>
