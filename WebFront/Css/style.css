@@ -176,9 +176,9 @@ code {
 	width: 550px;
 	
 }
-#main .navigation .alignleft {
+/*#main .navigation .alignleft {
 	float: left;
-}
+}*/
 #main .navigation .alignleft a:link,
 #main .navigation .alignleft a:visited {
 	color:black;

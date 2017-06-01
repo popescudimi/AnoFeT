@@ -1,7 +1,7 @@
 from os                 import curdir, sep, path
 from DBController       import DBConnection
 from BaseHTTPServer     import BaseHTTPRequestHandler, HTTPServer
-from ServerFunctions    import register, item_category, search_item
+from ServerFunctions    import register, item_category, search_item, review_getter
 import json
 import random
 
@@ -18,6 +18,8 @@ import random
 
 
 #global
+from WebBack.ServerFunctions import review_inserter
+
 token_vector={}
 
 #====================================================
@@ -107,6 +109,11 @@ class AppHandler(BaseHTTPRequestHandler):
             return item_category(self, "party")
         if 'TitleP' in raw_request:
             return item_category(self, "title")
+
+        if 'Review_Get>' in raw_request:
+            return review_getter(self,raw_request)
+        if 'Review_Submit<!>' in raw_request:
+            return review_inserter(self,raw_request,token_vector)
 
         if 'Sbox' in raw_request:
             return search_item(self, raw_request.split('>')[1])
