@@ -37,5 +37,6 @@ def register(request_handler, raw_request):
         else:
             raspuns = json.dumps({"Response": "User or Email taken"})
             return raspuns
+
     raspuns = json.dumps({"Response": "Bad Data"})
     return raspuns
