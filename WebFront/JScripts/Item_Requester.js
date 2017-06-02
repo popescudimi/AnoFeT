@@ -102,3 +102,28 @@ function get_Title() {
         i++;
     }
 }
+function get_your_publicItems() {
+    var i=0;
+    var tok=localStorage.getItem("tok");
+    tok=tok.replace(' ','');
+    var msg="MyItem<!>"+tok;
+    var pg="AccountPage.html";
+    while (i<4)
+    {
+        get_test_item(pg,msg);
+        i++;
+    }
+}
+function get_private_items() {
+    var i=0;
+    var msg="Invite<!>";
+    var tok=localStorage.getItem("tok");
+    tok=tok.replace(' ','');
+    msg=msg+tok;
+    var pg="PrivateItems.html";
+    while (i<5)
+    {
+        get_test_item(pg,msg);
+        i++;
+    }
+}

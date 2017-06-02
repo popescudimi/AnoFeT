@@ -3,9 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <title>Account_Page</title>
-    <link rel="stylesheet" type="text/css" href="../Css/log_style.css">
+    <link rel="stylesheet" type="text/css" href="../Css/style.css">
 </head>
-<body>
-<p style="color:orange">Aici iti vezi itemele la care ai primit invitatie si tot de aici o sa mai ai un link catre o pg unde postezi iteme</p>
+<body onload="get_your_publicItems()">
+<div id="wrapp">
+  <div id="header">
+    <div id="HederTitle">
+      <h1> Account Page</h1>
+        <span>Items,Places and More...</span> </div>
+        <p align="center" style="color:white;font-size:200%;" >
+          <span><a id="View your items" href="http://localhost:2526/Pages/PrivateItems.html">View your private items</a></span>
+          <span style="float:left;"><a id="Creator" href="http://localhost:2526/Pages/ItemCreation.html">Create and Post an Item or Event</a> </span>
+        </p>
+      <div class="clear"></div>
+      <div id="BottomHeader">
+      <div id="BottomHeaderWrapp">
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+
+<h2 align="left" style="color:Orange;font-size:200%">Your public items</h2>
+ <div id=wrappinner">
+    <h2>Your public items</h2>
+    <div id="main">
+      </div>
+    <div class="navigation">
+        <div class="alignleft"></div>
+        <div class="alignright"></div>
+      </div>
+     <div id="sidebar"></div>
+ </div>
+</div>
+
+<script src="../JScripts/Data_Flux.js"></script>
+<script src="../JScripts/Item_Requester.js"></script>
 </body>
 </html>

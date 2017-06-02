@@ -19,6 +19,9 @@ import random
 
 #global
 from WebBack.ServerFunctions import review_inserter
+from WebBack.ServerFunctions.Account import public_getter
+from WebBack.ServerFunctions.Invited import get_invitation
+from WebBack.ServerFunctions.Item_Insert import insert_item
 
 token_vector={}
 
@@ -111,6 +114,12 @@ class AppHandler(BaseHTTPRequestHandler):
             return review_getter(self,raw_request)
         if 'Review_Submit<!>' in raw_request:
             return review_inserter(self,raw_request,token_vector)
+        if 'MyItem<!>' in raw_request:
+            return public_getter(self,raw_request,token_vector)
+        if 'Invite<!>' in raw_request:
+            return get_invitation(self,raw_request,token_vector)
+        if 'IObject<!>' in raw_request:
+            return insert_item(self,raw_request,token_vector)
 
         if 'Sbox' in raw_request:
             return search_item(self, raw_request.split('>')[1])
