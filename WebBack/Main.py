@@ -1,7 +1,7 @@
 from os                 import curdir, sep, path
 from DBController       import DBConnection
 from BaseHTTPServer     import BaseHTTPRequestHandler, HTTPServer
-from ServerFunctions    import register, item_category, search_item, review_getter
+from ServerFunctions    import login, register, validate_token, item_category, search_item, review_getter, review_inserter, public_getter, insert_item
 import json
 import random
 
@@ -18,47 +18,45 @@ import random
 
 
 #global
-from WebBack.ServerFunctions import review_inserter
-
-token_vector={}
 
 #====================================================
-def generate_token():
-    token = ""
-    for c in range(1, 10):
-        if(random.randint(0,1) == 0):   # Digit in token
-            token = token + str(random.randint(0,9))
-        else:                           # Letter in token
-            token = token + str(random.choice("abcdefghijklmnopqrstuvwxyz"))
-    return token
-
-
-
-def validare_token(selfie,raw_request):
-    request=raw_request.split(',')
-    global token_vector
-    if request[1] in token_vector.keys() :
-        raspuns=json.dumps({"verify":"Ok"},indent=4,separators=(',', ': '))
-        return raspuns
-    else:
-        raspuns = json.dumps({"verify": "No"}, indent=4, separators=(',', ': '))
-        return raspuns
-
-def logare(selfie, raw_request):
-    request = raw_request.split("<!>")
-    request[0] = request[0].replace("Log", "", 1)
-    querry = "select * from site_users where USERNAME LIKE '" + request[0] + "' AND PASSWORD LIKE '" + request[1] + "'"
-    q_serch = selfie.db_conn.execute(querry);
-    if (str(q_serch) == '[]'):
-        raspuns = json.dumps({"Response": "Bad", "Token": "0"}, indent=4, separators=(',', ': '))
-        return raspuns
-    else:
-        fortune_cookie = generate_token()
-        global token_vector
-        token_vector[fortune_cookie] = request[0]
-        raspuns = json.dumps({"Response": "Good", "Token": fortune_cookie}, indent=4, separators=(',', ': '))
-        return raspuns
+# def generate_token():
+#     token = ""
+#     for c in range(1, 10):
+#         if(random.randint(0,1) == 0):   # Digit in token
+#             token = token + str(random.randint(0,9))
+#         else:                           # Letter in token
+#             token = token + str(random.choice("abcdefghijklmnopqrstuvwxyz"))
+#     return token
+#
+#
+#
+# def validare_token(selfie,raw_request):
+#     request=raw_request.split(',')
+#     global token_vector
+#     if request[1] in token_vector.keys() :
+#         raspuns=json.dumps({"verify":"Ok"},indent=4,separators=(',', ': '))
+#         return raspuns
+#     else:
+#         raspuns = json.dumps({"verify": "No"}, indent=4, separators=(',', ': '))
+#         return raspuns
+#
+# def logare(selfie, raw_request):
+#     request = raw_request.split("<!>")
+#     request[0] = request[0].replace("Log", "", 1)
+#     querry = "select * from site_users where USERNAME LIKE '" + request[0] + "' AND PASSWORD LIKE '" + request[1] + "'"
+#     q_serch = selfie.db_conn.execute(querry);
+#     if (str(q_serch) == '[]'):
+#         raspuns = json.dumps({"Response": "Bad", "Token": "0"}, indent=4, separators=(',', ': '))
+#         return raspuns
+#     else:
+#         fortune_cookie = generate_token()
+#         global token_vector
+#         token_vector[fortune_cookie] = request[0]
+#         raspuns = json.dumps({"Response": "Good", "Token": fortune_cookie}, indent=4, separators=(',', ': '))
+#         return raspuns
 #===================================================================================================
+
 class AppHandler(BaseHTTPRequestHandler):
 
     content_type = {'.css' : 'text/css',
@@ -72,8 +70,9 @@ class AppHandler(BaseHTTPRequestHandler):
                     '.text': 'text/plain',
                     '.txt' : 'text/plain'}
 
-    db_conn = DBConnection.connect("student", "STUDENT", "localhost") #la mine PROJECT1 e project1,modifica daca vrei sa iti mearga
+    db_conn = DBConnection.connect("PROJECT1", "project1", "localhost") #la mine PROJECT1 e project1,modifica daca vrei sa iti mearga
 
+    active_tokens = {}
 
     def dispatcher(self, raw_request):
         # ==========================================dispatcher==============================================
@@ -81,17 +80,17 @@ class AppHandler(BaseHTTPRequestHandler):
         # not ready yet -just for getting the ideea scope-
 
         if 'MyItem<!>' in raw_request:
-            return public_getter(self, raw_request, token_vector)
+            return public_getter(self, raw_request, self.active_tokens)
 
         if 'UsernameBox' in raw_request:
             return register(self, raw_request)
             # nu uita de return
 
         if 'Log' in raw_request and '<!>' in raw_request:
-            return logare(self, raw_request)
+            return login(self, raw_request)
 
         if 'Token,' in raw_request:
-            return validare_token(self, raw_request)
+            return validate_token(self, raw_request)
 
         if 'ItemP' in raw_request:
             return item_category(self, "item")
@@ -113,17 +112,20 @@ class AppHandler(BaseHTTPRequestHandler):
         if 'Review_Get>' in raw_request:
             return review_getter(self,raw_request)
         if 'Review_Submit<!>' in raw_request:
-            return review_inserter(self,raw_request,token_vector)
+            return review_inserter(self,raw_request, self.active_tokens)
 
         if 'Sbox' in raw_request:
             return search_item(self, raw_request.split('>')[1])
+
+        if 'IObject' in raw_request:
+            return insert_item(self, raw_request)
 
         return json.dumps({'item_name'       : "Magical Error",
                            'date_posted'     : "It's an error date :)",
                            'item_description': "Those errors man.... I mean look at them... ",
                            'publisher'       : "Red Screen of Error"},
-                            indent=4,
-                            separators=(',', ': '))
+                          indent=4,
+                          separators=(',', ': '))
 
 
     def do_GET(self):
@@ -164,7 +166,6 @@ def run(server=HTTPServer, handler=AppHandler, port=2526):
     httpd = server(server_address, handler)
     print "Started the HTTP Server at port", port
     httpd.serve_forever()
-
 
 
 if __name__ == "__main__":
