@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Post Items</title>
+    <link rel="stylesheet" type="text/css" href="../Css/style.css">
+</head>
+<body>
+<h1 align="center" style="color:orange">CREATE ITEM</h1><br><br>
+<form  id="Enter informations" align="center" style="color:darkorange" method="post">
+    <p>Title</p>
+    <input type="text" id="TitleT" title="Title"><br>
+    <p>Description</p>
+    <textarea rows="8" cols="80" id="description">
+         </textarea>
+    <p>Category</p>
+    <select id="category">
+        <option value="items">Item</option>
+        <option value="festivals">Festival</option>
+        <option value="ceremonies">Ceremonie</option>
+        <option value="restaurants">Restaurant</option>
+        <option value="pubs">Pub</option>
+        <option value="hotels">Hotel</option>
+        <option value="parties">Partie></option>
+        <option value="titles">Title</option>
+</select>
+    <br>
+    <input type="checkbox" id="private" value="yes"> Private item<br>
+    <p style="color: orange">Invites:</p>
+    <textarea rows="8" cols="80" id="invites">
+         </textarea><br>
+    <p style="color: red">*Only for private items*</p>
+    <p style="color: red">*Emails must be separeted by a coma , *</p>
+    <button onclick="creater()">Create</button>
+</form>
+<script src="../JScripts/Creator.js"></script>
+</body>
+</html>

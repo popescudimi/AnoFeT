@@ -13,12 +13,14 @@ def item_support(request_handler, querry):
     username_querry = request_handler.db_conn.execute("select username from site_users where id=" + prearranged_querry[1])
     username = str(username_querry).translate(None, '()[]",').translate(None, "'")
     itemname = prearranged_querry[2].translate(None, "'")
-    return json.dumps({'item_name'       : itemname,
+    response =  json.dumps({'item_name'       : itemname,
                        'date_posted'     : convert_todate(prearranged_querry[4], prearranged_querry[5],prearranged_querry[6]),
                        'item_description': prearranged_querry[3],
                        'publisher'       : username},
                         indent = 4,
                         separators = (',', ': '))
+    print response
+    return response
     # un fisier json e un fisier k=cheie valoare sau vector de vectori de chei valori (lista ar fi un cuv mai bun) , but let's keep things simple
     # general use (category items) -folosita in functii care iau iteme direct, nu folosi la altceva!
 
