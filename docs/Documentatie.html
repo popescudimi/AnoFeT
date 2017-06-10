@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Tehnologii Web — Facultatea de Informatica IASI</title>
+    <link rel="stylesheet" href="scholarly.css">
+    <link rel="stylesheet" href="node_modules/prismjs/themes/prism-coy.css">
+    <script src="node_modules/prismjs/prism.js" defer></script>
+  </head>
+  <body prefix="schema: http://schema.org/ xsd: http://www.w3.org/2001/XMLSchema# sa: https://ns.science.ai/">
+    <header>
+      <p class="title">Tehnologii Web</p>
+      <p class="subtitle">Faculty of Computer Science IASI</p>
+    </header>
+    <article id="what" typeof="schema:ScholarlyArticle" resource="#">
+      <h1>AnoFeT</h1>
+      <section>
+        <ol>
+          <li property="schema:author" typeof="sa:ContributorRole">
+            <a property="schema:author" href="http://github.com/RaresDima" typeof="schema:Person">
+              <span property="schema:givenName">Dima </span>
+              <span property="schema:familyName">Rares</span>
+            </a>
+          </li>
+          <li property="schema:contributor" typeof="sa:ContributorRole">
+            <a property="schema:contributor" href="https://github.com/TabuscaBogdan" typeof="schema:Person">
+              <span property="schema:givenName">Tabusca</span>
+              <span property="schema:familyName">Bogdan</span>
+          <li property="schema:contributor" typeof="sa:ContributorRole">
+            <a property="schema:contributor" href="https://github.com/popescudimi" typeof="schema:Person">
+              <span property="schema:givenName">Popescu</span>
+              <span property="schema:familyName">Dimitrie</span>
+            </a>
+            <a href="#scienceai" property="sa:roleAffiliation" resource="http://science.ai/"></a>
+          </li>
+         
+        </ol>
+      </section>
+
+      <section typeof="sa:Abstract" id="abstract">
+        <h2>Introducere</h2>
+        <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          Proiectul presupune un instrument Web ce permite utilizatorilor posibilitatea de a oferi feedback pentru un anumit lucru (eveniment, persoana, pub, festival, carte, etc). Un utilizator va putea folosi aplicatia web prin intermediul unui cont. Atunci când utilizatorul utilizează pentru prima oară aplicația, se va putea înregistra completând datele necesare pentru a putea fi introdus in baza de date (conform constrângerilor impuse). Ulterior, după ce și-a creat contul se va putea loga si folosi aplicația cum se cuvine. El va putea sa caute diferite lucruri după o anumita categorie, va putea sa va diferite lucruri postate pentru a lasa o recenzie, să vizualizeze itemele lui private. Pentru fiecare actiune ce va fi realizată, postare de lucru, lăsare de review, creare de item se va acțioana in baza de date pentru a mentine aceste informații, si ca aplicația să ruleze intr-un mod normal.
+        </p>
+      </section>
+      <section typeof="sa:Arhitectura" id="arhitectura">
+        <h2>Arhitectura aplicatiei</h2>
+          <p>
+         
+          
+       Aplicația folosește un system response factory, care analizează request-ul provenit de la pagina web, si apelează funcția specifică acelui request, după care răspuns-ul e trimis sub forma JSON, mai mult paginile javascript-urile sunt trimise prin metoda GET, iar request-urile efective pe care le face un utilizator sunt procesate prin POST. Exemple, Login system-ul cand primeste un user si o parolă genează un token pe care îl reține într-un vector, și îil trimite la user (care îl stochează local in in browser storage), de fiecare data când user-ul intră pe pagina principală, se face o verificare a validalității token-ului respectiv. Cât despre review system, utilizatorul logat, poate crea iteme care sunt de tip publice and privat, itemele publice vor fi văzute de oricine, dar numai utilizatorii logați pot da review-uri la ele. Itemele private sunt pe bază de mail, pe scurt, numai cei care au email-urile specificate la crearea obiectului pot vedea și da review-uri la acele obiecte. Un alt lucru important este că cam toate request-urile sunt făcute prin intermediul AJAX.</p>
+      <section typeof="sa:Results" id="definition">
+        <h2>Definitie</h2>
+        <p>
+          O aplicatie web este un program care ruleaza intr-o arhitectura client-server folosind tehnologiile deschise World Wide Web . Ele inlocuiesc
+          modelele in care atat serverul cat si clientul ruleaza tehnologii proprietar , mentenanta aplicatiilor de pe partea de client fiind foarte complexa , 
+          costisitoare si susceptibila la erori .
+        </p>
+        <a href="http://tinypic.com?ref=xkyo9y" target="_blank"><img src="http://i66.tinypic.com/xkyo9y.png" border="0" alt="Image and video hosting by TinyPic"></a>
+
+        <section id="file-headers">
+          <h3>Detalii de implementare</h3>
+          <p>
+           Fiind vorba despre un site ce oferă un serviciu de feedback, fie el și anonim, este evident că un utilizator va trebui să creeze un cont pentru a putea monitoriza propriile obiecte postate, deci necesitatea unui tabel de utilizatori, de altfel prezent in majoritatea site-urilor moderne.  
+Analog, prin natura serviciului oferit,era nevoie de un mod de a stoca obiectele adăugate, deci o tabela Items pentru acest scop, care deține o cheie străine către tabela users, cu id-ul userului ce a creat fiecare obiect.  
+
+<br>
+Tabela SITE_USERS va conține utilizatorii prezenți în aplicație . În primul rând, utilizatorii vor fi identificați prin câmpul ID (NUMBER) care este si cheie primară a acestei tabele. Alte câmpuri prezente în tabelă sunt NUME (VARCHAR2(30)), reprezintă numele de familie al utilizatorului, PRENUME (VARCHAR2(50)), reprezinta prenumele utilizatorului, EMAIL 
+(VARCHAR2(100)), reprezintă email-ul utilizatorului, DATA_NASTERE (TIMESTAMP(6)) reprezintă data de naștere a utilizatorului, USERNAME (VARCHAR2(50)), câmp unic ce va reprezenta username-ul primit de catre utilizator, PASSWORD (VARCHAR2(50)) reprezintă parola contului de utilizator. 
+</br>
+<br>
+Tabela REVIEWS va conține recenziile utilizatorilor asupra unui item. Câmpurile prezente aici sunt : 
+ID(NUMBER) care este cheia primară, USER_ID(NUMBER) id-ul utilizatorului care face recenzia  
+, CONTENT(VARCHAR2(3000)) conținutul recenziei (părerea care și-o exprimă utilizatorului), DATE_LEFT(TIMESTAMP(6)) data cand a fost lasată recenzia.  
+</br>
+<br>
+Tabela ITEMS va conține itemle care sunt evaluate. În tabelă vor fi prezente câmpurile : ID(NUMBER) este cheia primară, USER_ID(NUMBER) id-ul utilizatorului care postează acel item, TITLE(VARCHAR2(100)) reprezintă titlul item-ului, DESCRIPTION(VARCHAR2(3000)) reprezintă descrierea item-ului scrisă de utilizator, START_DATE(TIMESTAMP(6)) reprezintă data când este postat item-ul, VIEWS(NUMBER) număr-ul de vizualizări pe care îl primește item-ul.   
+Acestea sunt tabelele de bază folosite în cadrul dezvoltării aplicației, folosind ca baze de date Oracle, un model relațional a fost necesară asigurarea din start a respectării anumitor relații între tabele prin chei primare, chei străine si a altor costrîngeri, de exemplu în momentul in care un utilizator creeaza item, trebuie neapărat ca acest item sa fie menținut în tabela items dar și în tabela users, pentru a respecta relațiile dintre aceste 2 tabele.  
+</br>
+<br>
+Pe partea de back-end, s-a realizat un DBController pentru a realiza conexiunea dintre website si baza de date Oracle. Acesta are rolul de a realiza conexiunea, de a oferi răspunsuri la interogări, etc. Pe partea de ServerFunctions, s-au implementat fiecare funcțiile necesare pe partea de backend. De exemplu, functiile Register.py,Items.py,Account.py fiecare avânduși rolul specific, atunci când un utilizator se înregistrează trebuie să se face mutarea si în baza de date, respectate constrângerile impuse, iar pe partea de Items la fel, fiecare postare de item, fiecare creare trebuie menținută pentru a face ca site-ul să fie cât mai funcțional.  
+</br>
+  <img id="im1" src="diagrame.jpg" border = "0" height = "500" width = "600" alt=""/>
+  <br>
+  Diagrama ce prezinta structura bazei de date si ideea de crearea a tabelelor.
+  </br>
+  <section id="file-headers">
+<h2> Tehnologii folosite </h2>
+
+  <ul>
+				<li>Front-end : HTML5/CSS3/Javascript.</li>
+				<li>Database : Oracle 11g. </li>
+				<li>Back-end : Python 2.7 </li>
+			</ul>        
+		
+<h2> Concluzie </h2>
+În concluzie, implementarea back-end a fost realizată in Python (versiunea 2.7) iar principalele unelte de care ne-am folosit au fost un API pentru acces-ul la baza de date Oracle, API care invelește API-ul oficial Oracle, și il face mai ușor de folosit. Iar pentru interacțiunea cu  client-ul, cu front-end-ul, am folosit un API propriu care este un pachet cu diverite funcții pentru diverse funcții ale site-ului. În pachet există diverse funcții pentru login, register, items, etc necesare pe partea de front-end, care sunt optimizate deoarece nu se alocă spațiu inutiul, și menținerea structurilor repetitive la un nivel minim, acesta ducând si la un cod care este ușor de înțeles.   
+		
+		
+		</section>
+    </article>
+  
+  </body>
+</html>
